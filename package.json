@@ -1,0 +1,15 @@
+{
+  "name": "cibolo",
+  "version": "0.1.0",
+  "description": "A pluggable document translation tool built using WebAssembly (WASM) and the WASM Component Model",
+  "type": "module",
+  "workspaces": [
+    "projects/typescript/*"
+  ],
+  "private": true,
+  "scripts": {
+    "setup": "make setup",
+    "cli": "bun run projects/typescript/cli/src/index.ts"
+  }
+}
+
