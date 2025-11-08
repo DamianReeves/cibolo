@@ -1,0 +1,18 @@
+package build
+
+import mill.*
+
+object `package` extends Module {
+
+  /** 
+  * Setup the dependencies and environment for the project
+  * Installs tools specified in .prototools using proto
+  */
+  def setup() = Task.Command {
+    os.proc("proto", "install").call(
+      stdout = os.Inherit,
+      stderr = os.Inherit
+    )
+  }
+}
+

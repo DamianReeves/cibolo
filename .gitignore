@@ -1,0 +1,18 @@
+# Mill build output
+out/
+
+# Mill cache and temporary files
+.mill/
+
+# Node.js dependencies
+node_modules/
+
+# Build target directory
+target/
+
+# IDE files
+.vscode/
+.metals/
+.idea/
+.bsp/
+.bloop/
