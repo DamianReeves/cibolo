@@ -1,24 +1,16 @@
 {
-  "name": "cibolo-cli",
+  "name": "cibolo-tools",
   "version": "0.1.0",
-  "description": "CLI for Cibolo document translation tool",
+  "description": "Document processing tools and implementations for Cibolo",
   "type": "module",
   "main": "./src/index.ts",
-  "bin": {
-    "cibolo": "./src/index.ts"
-  },
   "scripts": {
-    "dev": "bun run src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target bun",
     "test": "bun test",
     "check": "bun run --bun tsc --noEmit && bunx prettier --check \"src/**/*.{ts,tsx,json}\" && bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\""
   },
   "dependencies": {
-    "@trpc/server": "^10.45.2",
-    "trpc-cli": "^0.1.0",
-    "arktype": "^2.0.0",
     "cibolo-core": "workspace:*",
-    "cibolo-tools": "workspace:*"
+    "arktype": "^2.0.0"
   },
   "devDependencies": {
     "@types/bun": "latest",

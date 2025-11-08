@@ -30,4 +30,3 @@ describe("Version Command Integration", () => {
     expect(router.version).toBeDefined();
   });
 });
-
