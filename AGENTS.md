@@ -16,6 +16,14 @@ Cibolo is a pluggable document translation tool built using WebAssembly (WASM) a
   
 - **TypeScript/JavaScript**: Host runtime and fullstack development
   - **Bun**: Fullstack toolchain serving as both bundler and runtime
+  - **ElysiaJS**: TypeScript backend framework for building the web application server
+  - **Eden**: Type-safe client framework for ElysiaJS, providing end-to-end type safety
+  - **ArkType**: Preferred TypeScript schema validation framework
+    - Aligns with "parse, don't validate" principle through type-safe parsing
+  - **trpc-cli**: Preferred CLI framework for command-line interface development
+    - Native integration with ArkType for type-safe command-line argument parsing
+    - Built on tRPC for end-to-end type safety
+    - Allows reuse of ArkType schemas directly in CLI commands
   - Used for CLI development, web application, and WASM component host
   
 - **Gleam**: Functional language for additional components (planned)
@@ -85,9 +93,20 @@ The CLI provides two main capabilities:
    - Output translated documents
 
 2. **Web Application Server**: Serve a fullstack web application
+   - Built with ElysiaJS backend framework
+   - Eden provides type-safe client-server communication
    - Bun serves as both bundler and runtime
    - Web app can interact with WASM components
    - Hot reloading and development server support
+
+**CLI Framework Requirements:**
+- **Preferred Framework**: trpc-cli
+  - Native ArkType integration for type-safe command-line parsing
+  - Enables reuse of existing ArkType schemas for CLI argument validation
+  - Provides end-to-end type safety from CLI arguments to execution
+- **Framework Selection Criteria**: Any CLI framework must integrate with ArkType and/or standard schema validation libraries
+  - Ensures consistency with the "parse, don't validate" principle
+  - Allows shared type definitions between CLI, API, and internal logic
 
 ### Component Development
 
@@ -134,10 +153,17 @@ The CLI provides two main capabilities:
 
 ### Data Flow
 
-1. Documents are parsed into well-typed structures (parse, don't validate)
+1. Documents are parsed into well-typed structures using ArkType (parse, don't validate)
 2. Parsed documents flow through WASM component pipelines
 3. Components transform documents using functional transformations
 4. Results are validated and output in the desired format
+
+### Schema Validation
+
+- **ArkType**: Primary schema validation framework for TypeScript
+  - Provides type-safe parsing that aligns with "parse, don't validate" principle
+  - Used at API boundaries (ElysiaJS routes) and data transformation points
+  - Ensures type safety from input parsing through to output
 
 ### Error Handling
 
@@ -184,5 +210,9 @@ The CLI provides two main capabilities:
 - [wasm-tools](https://github.com/bytecodealliance/wasm-tools)
 - [mill Build Tool](https://com-lihaoyi.github.io/mill/)
 - [Bun Documentation](https://bun.sh/docs)
+- [ElysiaJS](https://elysiajs.com/)
+- [Eden](https://elysiajs.com/eden/overview.html)
+- [ArkType](https://arktype.io/)
+- [trpc-cli](https://github.com/mmkal/trpc-cli)
 
 
