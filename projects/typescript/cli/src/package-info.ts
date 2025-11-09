@@ -12,5 +12,5 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
 export const programName = packageJson.name;
 export const programVersion = packageJson.version;
 export const programDescription =
-  packageJson.description || "CLI for Cibolo document translation tool";
+  packageJson.description || "Ndoctrinate document translation tool";
 export { packageJson };

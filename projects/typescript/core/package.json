@@ -1,7 +1,7 @@
 {
-  "name": "cibolo-core",
+  "name": "ndoctrinate-core",
   "version": "0.1.0",
-  "description": "Core types and interfaces for Cibolo document processing",
+  "description": "Core types and interfaces for Ndoctrinate document processing",
   "type": "module",
   "main": "./src/index.ts",
   "scripts": {

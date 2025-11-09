@@ -5,7 +5,7 @@ import {
   type Source,
   type StructuredDocument,
   type DocumentProcessingError,
-} from "cibolo-core";
+} from "ndoctrinate-core";
 
 /**
  * AsciiDoc document processor

@@ -1,5 +1,5 @@
 {
-  "name": "cibolo",
+  "name": "ndoctrinate-root",
   "version": "0.1.0",
   "description": "A pluggable document translation tool built using WebAssembly (WASM) and the WASM Component Model",
   "type": "module",

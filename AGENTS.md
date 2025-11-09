@@ -1,10 +1,10 @@
 # AGENTS.md
 
-This document provides comprehensive information about the Cibolo project for AI agents and developers working on the codebase.
+This document provides comprehensive information about the Ndoctrinate project for AI agents and developers working on the codebase.
 
 ## Project Overview
 
-Cibolo is a pluggable document translation tool built using WebAssembly (WASM) and the WASM Component Model. The project enables modular, composable translation capabilities through WASM components that can be dynamically loaded and executed.
+Ndoctrinate is a pluggable document translation tool built using WebAssembly (WASM) and the WASM Component Model. The project enables modular, composable translation capabilities through WASM components that can be dynamically loaded and executed.
 
 ## Core Technologies
 
@@ -57,7 +57,7 @@ Cibolo is a pluggable document translation tool built using WebAssembly (WASM) a
 This is a **monorepo** that supports multiple languages and their respective build systems:
 
 ```
-cibolo/
+ndoctrinate/
 └── projects/
     ├── moonbit/      # Moonbit WASM components
     ├── typescript/   # TypeScript/JavaScript code (CLI, web app, host)

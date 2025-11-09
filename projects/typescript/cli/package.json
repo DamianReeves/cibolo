@@ -1,11 +1,11 @@
 {
-  "name": "cibolo-cli",
+  "name": "ndoctrinate",
   "version": "0.1.0",
-  "description": "CLI for Cibolo document translation tool",
+  "description": "CLI for Ndoctrinate document translation tool",
   "type": "module",
   "main": "./src/index.ts",
   "bin": {
-    "cibolo": "./src/index.ts"
+    "ndoctrinate": "./src/index.ts"
   },
   "scripts": {
     "dev": "bun run src/index.ts",
@@ -17,8 +17,8 @@
     "@trpc/server": "^10.45.2",
     "trpc-cli": "^0.1.0",
     "arktype": "^2.0.0",
-    "cibolo-core": "workspace:*",
-    "cibolo-tools": "workspace:*",
+    "ndoctrinate-core": "workspace:*",
+    "ndoctrinate-tools": "workspace:*",
     "effect": "^3.0.0"
   },
   "devDependencies": {

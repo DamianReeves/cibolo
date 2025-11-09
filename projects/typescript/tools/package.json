@@ -1,7 +1,7 @@
 {
-  "name": "cibolo-tools",
+  "name": "ndoctrinate-tools",
   "version": "0.1.0",
-  "description": "Document processing tools and implementations for Cibolo",
+  "description": "Document processing tools and implementations for Ndoctrinate",
   "type": "module",
   "main": "./src/index.ts",
   "scripts": {
@@ -9,7 +9,7 @@
     "check": "bun run --bun tsc --noEmit && bunx prettier --check \"src/**/*.{ts,tsx,json}\" && bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\""
   },
   "dependencies": {
-    "cibolo-core": "workspace:*",
+    "ndoctrinate-core": "workspace:*",
     "arktype": "^2.0.0",
     "effect": "^3.0.0"
   },

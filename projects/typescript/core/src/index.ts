@@ -1,5 +1,5 @@
 /**
- * cibolo-core - Core types and interfaces for document processing
+ * ndoctrinate-core - Core types and interfaces for document processing
  */
 
 // Export all types

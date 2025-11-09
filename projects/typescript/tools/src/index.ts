@@ -1,5 +1,5 @@
 /**
- * cibolo-tools - Document processing tools and implementations
+ * ndoctrinate-tools - Document processing tools and implementations
  */
 
 // Export all processor layers

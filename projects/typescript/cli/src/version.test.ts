@@ -10,9 +10,11 @@ describe("Version Command Integration", () => {
     expect(result).toHaveProperty("version");
     expect(result.version).toBe("0.1.0");
     expect(result).toHaveProperty("name");
-    expect(result.name).toBe("cibolo-cli");
+    expect(result.name).toBe("ndoctrinate");
     expect(result).toHaveProperty("description");
-    expect(result.description).toBe("CLI for Cibolo document translation tool");
+    expect(result.description).toBe(
+      "CLI for Ndoctrinate document translation tool"
+    );
   });
 
   it("should return a valid version string", async () => {
