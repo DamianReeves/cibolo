@@ -1,12 +1,6 @@
-import { readFileSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
-
-// Get the package.json path relative to this file
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const packageJsonPath = join(__dirname, "..", "package.json");
-const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+// Import package.json directly - this will be bundled into the executable at build time
+// Using a relative path that works both in development and in the compiled executable
+import packageJson from "../package.json" with { type: "json" };
 
 // Export package information
 export const programName = packageJson.name;

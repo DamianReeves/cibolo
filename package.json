@@ -10,7 +10,9 @@
   "scripts": {
     "setup": "make setup",
     "cli": "bun run projects/typescript/cli/src/index.ts",
-    "check": "bun run --workspaces check"
+    "ndoctrinate": "./projects/typescript/cli/dist/ndoctrinate",
+    "verify": "bun run --workspaces verify",
+    "check": "bun run scripts/check-workspaces.ts"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.0",

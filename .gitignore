@@ -16,3 +16,7 @@ target/
 .idea/
 .bsp/
 .bloop/
+
+# Build outputs
+dist/
+projects/**/dist/

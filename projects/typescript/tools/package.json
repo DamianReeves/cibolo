@@ -6,7 +6,8 @@
   "main": "./src/index.ts",
   "scripts": {
     "test": "bun test",
-    "check": "bun run --bun tsc --noEmit && bunx prettier --check \"src/**/*.{ts,tsx,json}\" && bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\""
+    "verify": "bun run --bun tsc --noEmit && bunx prettier --check \"src/**/*.{ts,tsx,json}\" && bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\"",
+    "check": "bun run ../../../scripts/check.ts verify test"
   },
   "dependencies": {
     "ndoctrinate-core": "workspace:*",

@@ -10,6 +10,8 @@ export type {
   Result,
 } from "./types.js";
 
-// Export interfaces and service
+// Export interfaces and services
 export type { DocumentProcessor } from "./document-processor.js";
 export { DocumentProcessorService } from "./document-processor.js";
+export type { StructuredDocumentFilter } from "./structured-document-filter.js";
+export { StructuredDocumentFilterService } from "./structured-document-filter.js";

@@ -9,9 +9,11 @@
   },
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target bun",
+    "build": "bun run build.ts",
+    "clean": "rm -rf dist",
     "test": "bun test",
-    "check": "bun run --bun tsc --noEmit && bunx prettier --check \"src/**/*.{ts,tsx,json}\" && bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\""
+    "verify": "bun run --bun tsc --noEmit && bunx prettier --check \"src/**/*.{ts,tsx,json}\" && bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\"",
+    "check": "bun run ../../../scripts/check.ts verify test"
   },
   "dependencies": {
     "@trpc/server": "^10.45.2",

@@ -83,6 +83,14 @@ ndoctrinate/
 
 ## Development Workflow
 
+### Documentation Maintenance
+
+- **README.md**: Keep development and build instructions up to date in the README
+  - Include clear build instructions for all components
+  - Document prerequisites and setup steps
+  - Provide examples of common development tasks
+  - Update build instructions when build processes change
+
 ### CLI Development
 
 The CLI provides two main capabilities:
