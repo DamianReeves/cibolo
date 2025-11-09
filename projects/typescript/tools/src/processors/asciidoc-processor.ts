@@ -1,55 +1,56 @@
-import type {
-  DocumentProcessor,
-  Source,
-  StructuredDocument,
-  DocumentProcessingError,
-  Result,
+import { Effect, Layer } from "effect";
+import {
+  DocumentProcessorService,
+  type DocumentProcessor,
+  type Source,
+  type StructuredDocument,
+  type DocumentProcessingError,
 } from "cibolo-core";
 
 /**
  * AsciiDoc document processor
  * Stub implementation for processing AsciiDoc documents
  */
-export class AsciiDocProcessor implements DocumentProcessor {
-  process(source: Source): Result<StructuredDocument, DocumentProcessingError> {
-    try {
-      // For now, handle string input
-      if (typeof source === "string") {
-        return {
-          success: true,
-          value: {
-            content: source,
-            metadata: {
-              format: "asciidoc",
-            },
+class AsciiDocProcessor implements DocumentProcessor {
+  process(
+    source: Source
+  ): Effect.Effect<StructuredDocument[], DocumentProcessingError, never> {
+    // For now, handle string input
+    if (typeof source === "string") {
+      return Effect.succeed([
+        {
+          content: source,
+          metadata: {
+            format: "asciidoc",
           },
-        };
-      }
-
-      // Handle JSON input
-      if (typeof source === "object" && source !== null) {
-        const jsonString = JSON.stringify(source);
-        return {
-          success: true,
-          value: {
-            content: jsonString,
-            metadata: {
-              format: "asciidoc",
-              source: "json",
-            },
-          },
-        };
-      }
-
-      return {
-        success: false,
-        error: "Unsupported source type for asciidoc processor",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
-      };
+        },
+      ]);
     }
+
+    // Handle JSON input
+    if (typeof source === "object" && source !== null) {
+      const jsonString = JSON.stringify(source);
+      return Effect.succeed([
+        {
+          content: jsonString,
+          metadata: {
+            format: "asciidoc",
+            source: "json",
+          },
+        },
+      ]);
+    }
+
+    return Effect.fail(
+      "Unsupported source type for asciidoc processor" as DocumentProcessingError
+    );
   }
 }
+
+/**
+ * AsciiDocProcessorLayer - Provides AsciiDocProcessor as DocumentProcessorService
+ */
+export const AsciiDocProcessorLayer = Layer.succeed(
+  DocumentProcessorService,
+  new AsciiDocProcessor()
+);

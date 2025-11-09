@@ -2,7 +2,7 @@
  * cibolo-tools - Document processing tools and implementations
  */
 
-// Export all processors
-export { MarkdownProcessor } from "./processors/markdown-processor.js";
-export { AsciiDocProcessor } from "./processors/asciidoc-processor.js";
-export { DocxProcessor } from "./processors/docx-processor.js";
+// Export all processor layers
+export { MarkdownProcessorLayer } from "./processors/markdown-processor.js";
+export { AsciiDocProcessorLayer } from "./processors/asciidoc-processor.js";
+export { DocxProcessorLayer } from "./processors/docx-processor.js";

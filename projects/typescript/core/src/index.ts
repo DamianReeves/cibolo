@@ -10,5 +10,6 @@ export type {
   Result,
 } from "./types.js";
 
-// Export interfaces
+// Export interfaces and service
 export type { DocumentProcessor } from "./document-processor.js";
+export { DocumentProcessorService } from "./document-processor.js";

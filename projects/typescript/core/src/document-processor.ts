@@ -1,8 +1,8 @@
+import { Context, Effect } from "effect";
 import type {
   Source,
   StructuredDocument,
   DocumentProcessingError,
-  Result,
 } from "./types.js";
 
 /**
@@ -11,10 +11,20 @@ import type {
  */
 export interface DocumentProcessor {
   /**
-   * Process a document source into a structured document
+   * Process a document source into structured documents
    *
    * @param source - The document source (string or JSON)
-   * @returns A Result containing either a StructuredDocument on success or a DocumentProcessingError on failure
+   * @returns An Effect that produces an array of StructuredDocument on success or a DocumentProcessingError on failure
    */
-  process(source: Source): Result<StructuredDocument, DocumentProcessingError>;
+  process(
+    source: Source
+  ): Effect.Effect<StructuredDocument[], DocumentProcessingError, never>;
 }
+
+/**
+ * DocumentProcessorService - Context Tag for the DocumentProcessor service
+ * Used for dependency injection in Effect programs
+ */
+export const DocumentProcessorService = Context.GenericTag<DocumentProcessor>(
+  "DocumentProcessorService"
+);
