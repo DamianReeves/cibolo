@@ -1,0 +1,8 @@
+{
+  "id": "sdk-tooling",
+  "version": "1.0.0",
+  "name": "SDK and Version Manager Tooling",
+  "description": "Installs SDKMAN, nvm (Node Version Manager), and proto-cli (moonrepo)",
+  "options": {}
+}
+

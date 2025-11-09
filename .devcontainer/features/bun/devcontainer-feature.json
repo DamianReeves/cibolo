@@ -1,0 +1,11 @@
+{
+  "id": "bun",
+  "version": "1.0.0",
+  "name": "Bun",
+  "description": "Installs Bun JavaScript runtime and package manager",
+  "options": {},
+  "installsAfter": [
+    "./features/sdk-tooling"
+  ]
+}
+

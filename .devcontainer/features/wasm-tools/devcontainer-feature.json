@@ -1,0 +1,12 @@
+{
+  "id": "wasm-tools",
+  "version": "1.0.0",
+  "name": "WASM Tooling",
+  "description": "Installs WebAssembly tooling: wasm-tools, wit-bindgen-cli, wac, jco, and wasm-opt",
+  "options": {},
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/rust:1",
+    "./features/bun"
+  ]
+}
+

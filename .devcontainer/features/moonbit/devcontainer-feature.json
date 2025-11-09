@@ -1,0 +1,12 @@
+{
+  "id": "moonbit",
+  "version": "1.0.0",
+  "name": "MoonBit Compiler",
+  "description": "Installs the MoonBit programming language compiler",
+  "options": {},
+  "installsAfter": [
+    "./features/sdk-tooling",
+    "ghcr.io/devcontainers/features/node:1"
+  ]
+}
+

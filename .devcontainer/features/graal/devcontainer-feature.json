@@ -1,0 +1,17 @@
+{
+  "id": "graal",
+  "version": "1.0.0",
+  "name": "GraalVM",
+  "description": "Installs GraalVM via SDKMAN with optional native-image support",
+  "options": {
+    "graalvmPreferred": {
+      "type": "string",
+      "default": "oracle",
+      "description": "Preferred GraalVM variant (oracle, graalvm, or specific match token)"
+    }
+  },
+  "installsAfter": [
+    "./features/sdk-tooling"
+  ]
+}
+

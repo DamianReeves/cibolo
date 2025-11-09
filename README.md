@@ -44,4 +44,5 @@ make build
 
 ### Development
 
-For development instructions and guidelines, see [AGENTS.md](./AGENTS.md).
+- For Dev Container usage, Docker builds, and day-to-day workflows, see [DEVELOPING.md](./DEVELOPING.md).
+- For architecture, principles, and background, see [AGENTS.md](./AGENTS.md).
