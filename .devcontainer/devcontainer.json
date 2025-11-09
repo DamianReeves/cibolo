@@ -13,7 +13,11 @@
     },
     "./features/sdk-tooling": {},
     "./features/bun": {},
-    "./features/moonbit": {},
+    "./features/moonbit": {
+      "moonVersion": "0.1.20251109",
+      "mooncVersion": "v0.6.30+07d9d2445",
+      "moonrunVersion": "0.1.20251109"
+    },
     "./features/graal": {
       "graalvmPreferred": "oracle"
     },
@@ -22,7 +26,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "moonbit.moonbit-lang"
+        "moonbit.moonbit-lang",
+        "scalameta.metals"
       ],
       "settings": {
         "editor.formatOnSave": true,

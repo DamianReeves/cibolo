@@ -3,7 +3,23 @@
   "version": "1.0.0",
   "name": "MoonBit Compiler",
   "description": "Installs the MoonBit programming language compiler",
-  "options": {},
+  "options": {
+    "moonVersion": {
+      "type": "string",
+      "default": "",
+      "description": "Pin moon version (e.g., '0.1.0'). Empty means latest."
+    },
+    "mooncVersion": {
+      "type": "string",
+      "default": "",
+      "description": "Pin moonc version (e.g., '0.1.0'). Empty means latest."
+    },
+    "moonrunVersion": {
+      "type": "string",
+      "default": "",
+      "description": "Pin moonrun version (e.g., '0.1.0'). Empty means latest."
+    }
+  },
   "installsAfter": [
     "./features/sdk-tooling",
     "ghcr.io/devcontainers/features/node:1"
