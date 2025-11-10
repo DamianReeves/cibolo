@@ -12,7 +12,8 @@
   "dependencies": {
     "ndoctrinate-core": "workspace:*",
     "arktype": "^2.0.0",
-    "effect": "^3.0.0"
+    "effect": "^3.0.0",
+    "vfile": "^6.0.0"
   },
   "devDependencies": {
     "@types/bun": "latest",

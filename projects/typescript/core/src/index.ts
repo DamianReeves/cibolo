@@ -15,3 +15,6 @@ export type { DocumentProcessor } from "./document-processor.js";
 export { DocumentProcessorService } from "./document-processor.js";
 export type { StructuredDocumentFilter } from "./structured-document-filter.js";
 export { StructuredDocumentFilterService } from "./structured-document-filter.js";
+
+// Export pipeline module
+export * from "./pipeline/index.js";

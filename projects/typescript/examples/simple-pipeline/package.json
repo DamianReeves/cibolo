@@ -1,0 +1,15 @@
+{
+  "name": "simple-pipeline-example",
+  "version": "0.1.0",
+  "description": "Simple example demonstrating the Effect-based processing pipeline",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "start": "bun run src/index.ts"
+  },
+  "dependencies": {
+    "ndoctrinate-core": "workspace:*",
+    "effect": "^3.0.0"
+  }
+}
+
