@@ -2,16 +2,17 @@
   "name": "MoonBit Development",
   "image": "mcr.microsoft.com/devcontainers/rust:latest",
   "features": {
-    "ghcr.io/devcontainers/features/git:1": {
-      "version": "latest"
-    },
+    "./features/sdk-tooling": {},
     "ghcr.io/devcontainers/features/node:1": {
       "version": "latest"
     },
     "ghcr.io/devcontainers/features/python:1": {
-      "version": "latest"
+      "version": "3.13",
+      "uv":"latest",
+      "poetry":"latest",
+      "installFromSource":false,
+      "installMethod": "apt"
     },
-    "./features/sdk-tooling": {},
     "./features/bun": {},
     "./features/moonbit": {
       "moonVersion": "0.1.20251109",

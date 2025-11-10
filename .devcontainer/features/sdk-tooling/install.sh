@@ -2,6 +2,12 @@
 # Install SDK and version manager tooling
 set -e
 
+# Install git via OS package manager (as root, then switch back)
+if ! command -v git >/dev/null 2>&1; then
+    echo "Installing git..."
+    sudo apt-get update && sudo apt-get install -y git && sudo rm -rf /var/lib/apt/lists/*
+fi
+
 # Install SDKMAN if not already installed
 if [ ! -d "$HOME/.sdkman" ] && [ ! -d "/usr/local/sdkman" ]; then
     echo "Installing SDKMAN..."
