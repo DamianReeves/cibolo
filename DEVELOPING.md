@@ -11,17 +11,18 @@ make docker-run
 ```
 - Build CLI and run a quick sanity check:
 ```bash
-bun run build
+nx run-many -t build
 ./projects/typescript/cli/dist/ndoctrinate version
 ```
 - Run tests:
 ```bash
-bun test
+nx run-many -t test
 ```
 - View project dependency graph:
 ```bash
-bun run graph
+nx graph
 ```
+- See [.claude/nx-commands-guide.md](.claude/nx-commands-guide.md) for shell aliases and advanced usage.
 
 ## Overview
 Ndoctrinate is a polyglot monorepo built around the WASM Component Model. Core pieces:
@@ -125,50 +126,51 @@ This monorepo uses Nx for intelligent task running, caching, and dependency mana
 
 ### Key Nx Concepts
 
-- **Projects**: Each package in `projects/typescript/` is an Nx project with its own `project.json`
-- **Targets**: Tasks like `build`, `test`, `verify`, `check` defined per project
+- **Projects**: Each package in `projects/typescript/` is an Nx project
+- **Targets**: Tasks like `build`, `test`, `verify`, `check` inferred from package.json scripts
 - **Task Graph**: Nx builds a dependency graph and runs tasks in the correct order
 - **Caching**: Successful task runs are cached; unchanged projects skip re-execution
 - **Affected**: Run tasks only on projects affected by your changes
 
-### Common Nx Commands
+### Quick Command Reference
+
+This project uses **direct Nx commands** instead of wrapper scripts in package.json. This is more explicit and gives you full access to Nx's features.
 
 Run a specific target for one project:
 ```bash
-npx nx run <project-name>:<target>
-# Example:
-npx nx run ndoctrinate-core:test
-npx nx run ndoctrinate:build
+nx run <project-name>:<target>
+# Examples:
+nx run ndoctrinate-core:test
+nx run ndoctrinate:build
 ```
 
 Run a target across all projects:
 ```bash
-npx nx run-many -t <target>
+nx run-many -t <target>
 # Examples:
-bun run build        # Build all projects
-bun run test         # Test all projects
-bun run verify       # Verify all projects (type check, lint, format)
+nx run-many -t build        # Build all projects
+nx run-many -t test         # Test all projects
+nx run-many -t verify       # Verify all projects (type check, lint, format)
 ```
 
-Run a target only on affected projects (since last commit or branch point):
+Run a target only on affected projects:
 ```bash
-npx nx affected -t <target>
+nx affected -t <target>
 # Examples:
-bun run build:affected
-bun run test:affected
-bun run verify:affected
+nx affected -t build        # Build affected projects
+nx affected -t test         # Test affected projects
+nx affected -t verify       # Verify affected projects
 ```
 
-Visualize the project dependency graph:
+Utility commands:
 ```bash
-bun run graph        # Opens interactive graph in browser
-npx nx graph --file=graph.html  # Save to file
+nx graph                    # Visualize project dependency graph
+nx show projects            # List all projects
+nx show projects --affected # List affected projects
+nx reset                    # Clear Nx cache
 ```
 
-Clear the Nx cache:
-```bash
-bun run reset
-```
+**💡 Pro Tip**: Set up shell aliases for common commands. See [.claude/nx-commands-guide.md](.claude/nx-commands-guide.md) for recommended aliases and advanced usage.
 
 ### Project Structure
 
@@ -220,14 +222,14 @@ bun install
 ### Run Tests
 Run tests for all projects:
 ```bash
-bun run test
+nx run-many -t test
 # Or for a specific project:
-npx nx run ndoctrinate-core:test
+nx run ndoctrinate-core:test
 ```
 
 Run tests only on affected projects:
 ```bash
-bun run test:affected
+nx affected -t test
 ```
 
 Shorthand via Make:
@@ -252,17 +254,17 @@ make itest
 
 Build all projects:
 ```bash
-bun run build
+nx run-many -t build
 ```
 
 Build only affected projects:
 ```bash
-bun run build:affected
+nx affected -t build
 ```
 
 Build a specific project:
 ```bash
-npx nx run ndoctrinate:build
+nx run ndoctrinate:build
 ```
 
 Build CLI using Make:
@@ -279,8 +281,8 @@ make build
 
 Run type checking, linting, and formatting checks:
 ```bash
-bun run verify           # All projects
-bun run verify:affected  # Only affected projects
+nx run-many -t verify    # All projects
+nx affected -t verify    # Only affected projects
 ```
 
 ### Run Examples
@@ -289,7 +291,7 @@ Run the simple pipeline example:
 ```bash
 bun run example:simple-pipeline
 # Or directly:
-npx nx run simple-pipeline-example:start
+nx run simple-pipeline-example:start
 ```
 
 ### Working with MoonBit Components
@@ -304,22 +306,22 @@ moon build
 
 Check which projects are affected by your changes:
 ```bash
-npx nx show projects --affected
+nx show projects --affected
 ```
 
 See what tasks will run for a target:
 ```bash
-npx nx show project ndoctrinate-core --with-target=test
+nx show project ndoctrinate-core --with-target=test
 ```
 
 Run with verbose output to debug task execution:
 ```bash
-npx nx run ndoctrinate-core:test --verbose
+nx run ndoctrinate-core:test --verbose
 ```
 
 Skip Nx cache for debugging:
 ```bash
-npx nx run ndoctrinate-core:test --skip-nx-cache
+nx run ndoctrinate-core:test --skip-nx-cache
 ```
 
 ### WASM Tooling
