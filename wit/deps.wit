@@ -1,0 +1,569 @@
+package ndoctrinate:pipeline@0.1.0;
+
+/// Common types and primitives used across the pipeline components.
+interface common {
+  /// Represents a single point in a text document.
+  /// Points are used to specify locations in source files.
+  record point {
+    /// Line number (1-indexed)
+    line: u32,
+    /// Column number (1-indexed)
+    column: u32,
+    /// Character offset from the start of the document (0-indexed)
+    offset: option<u32>,
+  }
+
+  /// Represents a range between two points in a text document.
+  /// Used for specifying the location of nodes, errors, and messages.
+  record position {
+    /// Starting point of the range
+    start: point,
+    /// Ending point of the range
+    end: point,
+  }
+
+  /// Message severity levels for diagnostics, warnings, and errors
+  /// collected during pipeline processing.
+  enum message-severity {
+    /// Informational message
+    info,
+    /// Warning that doesn't prevent processing
+    warning,
+    /// Error that may affect output quality
+    error,
+    /// Fatal error that prevents processing
+    fatal,
+  }
+
+  /// A diagnostic message associated with a file.
+  /// Messages can be accumulated during parsing, transformation, and compilation.
+  record message {
+    /// Human-readable message text
+    text: string,
+    /// Severity level of the message
+    severity: message-severity,
+    /// Optional position in the source file
+    position: option<position>,
+    /// Optional rule or plugin identifier that generated this message
+    source: option<string>,
+    /// Optional URL to documentation about this message
+    url: option<string>,
+  }
+
+  /// Metadata is represented as JSON-encoded string for flexibility.
+  /// This allows arbitrary metadata structures while maintaining type safety
+  /// at the WIT boundary. Components can parse this according to their needs.
+  ///
+  /// Future iterations may provide structured metadata types.
+  type metadata = string;
+
+  /// Flexible data representation for extensible node properties.
+  /// Uses JSON encoding to support arbitrary data structures while
+  /// maintaining compatibility across language boundaries.
+  ///
+  /// Examples:
+  /// - `"string value"` for simple strings
+  /// - `"42"` for numbers
+  /// - `"true"` for booleans
+  /// - `"[1, 2, 3]"` for arrays
+  /// - `"{\"key\": \"value\"}"` for objects
+  type json-value = string;
+}
+
+/// Error types for pipeline operations.
+/// Uses algebraic data types (variants) to represent different error categories.
+interface errors {
+  use common.{position};
+
+  /// Details about what caused an error.
+  /// Can include nested error information for debugging.
+  record error-cause {
+    /// Description of the underlying cause
+    message: string,
+    /// Stack trace or additional context (optional)
+    trace: option<string>,
+  }
+
+  /// Error that occurs during the parsing phase.
+  /// Represents failures to convert input into an AST.
+  record parse-error {
+    /// Human-readable error message
+    message: string,
+    /// Optional position in the source where the error occurred
+    position: option<position>,
+    /// Optional underlying cause
+    cause: option<error-cause>,
+    /// Optional error code for programmatic handling
+    code: option<string>,
+  }
+
+  /// Error that occurs during the transformation phase.
+  /// Represents failures to transform an AST.
+  record transform-error {
+    /// Human-readable error message
+    message: string,
+    /// Optional path in the AST where the error occurred
+    /// (e.g., "root.children[3].properties.id")
+    node-path: option<string>,
+    /// Optional underlying cause
+    cause: option<error-cause>,
+    /// Optional identifier of the transformer that failed
+    transformer-id: option<string>,
+    /// Optional error code for programmatic handling
+    code: option<string>,
+  }
+
+  /// Error that occurs during the compilation phase.
+  /// Represents failures to convert an AST to output format.
+  record compile-error {
+    /// Human-readable error message
+    message: string,
+    /// Optional path in the AST where compilation failed
+    node-path: option<string>,
+    /// Optional underlying cause
+    cause: option<error-cause>,
+    /// Optional error code for programmatic handling
+    code: option<string>,
+  }
+
+  /// Union of all possible pipeline errors.
+  /// Uses variant type to maintain type safety while allowing different error types.
+  variant pipeline-error {
+    /// Error during parsing
+    parse(parse-error),
+    /// Error during transformation
+    transform(transform-error),
+    /// Error during compilation
+    compile(compile-error),
+  }
+}
+
+/// Abstract Syntax Tree (AST) types following the unist specification.
+/// See: https://github.com/syntax-tree/unist
+interface ast {
+  use common.{position, json-value};
+
+  /// Properties that can be attached to any node.
+  /// Uses JSON encoding for flexibility while maintaining type safety at boundaries.
+  record node-properties {
+    /// JSON-encoded properties object
+    /// Example: `"{\"id\": \"heading-1\", \"className\": [\"intro\"]}"`
+    data: json-value,
+  }
+
+  /// Base node structure following unist specification.
+  /// All AST nodes share these common fields.
+  record node-data {
+    /// Node type identifier (e.g., "root", "paragraph", "text", "heading")
+    node-type: string,
+    /// Optional position in source file
+    position: option<position>,
+    /// Optional additional properties
+    properties: option<node-properties>,
+  }
+
+  /// Text content for literal nodes.
+  /// Used by leaf nodes that contain actual text.
+  record text-content {
+    /// The text value
+    value: string,
+  }
+
+  /// Reference to child nodes by their identifiers.
+  /// Used by parent nodes to maintain tree structure.
+  type node-id = u32;
+
+  /// List of child node identifiers.
+  /// Parents store references to children rather than nested structures
+  /// to simplify serialization and avoid deep recursion.
+  record children {
+    /// List of child node IDs
+    ids: list<node-id>,
+  }
+
+  /// Complete node representation with all possible node types.
+  /// Uses a hybrid approach:
+  /// - Structured types for common nodes (root, text, parent)
+  /// - Flexible JSON representation for extensibility
+  variant node {
+    /// Root node - top of the syntax tree
+    /// Must be a parent node (has children)
+    root(node-root),
+
+    /// Text node - contains literal text
+    /// Always a leaf node (no children)
+    text(node-text),
+
+    /// Generic parent node - has children but no text value
+    /// Used for structural nodes (paragraph, heading, list, etc.)
+    parent(node-parent),
+
+    /// Literal node - contains text but may also have properties
+    /// Similar to text but can have additional metadata
+    literal(node-literal),
+
+    /// Generic extensible node for format-specific types
+    /// Allows formats to define custom node types using JSON
+    /// Example: `"{\"type\": \"yaml-frontmatter\", \"value\": \"...\"}"`
+    generic(node-generic),
+  }
+
+  /// Root node - the top-level node of a syntax tree.
+  /// Always has type "root" and must have children.
+  record node-root {
+    /// Common node data (type is always "root")
+    data: node-data,
+    /// Child nodes
+    children: children,
+  }
+
+  /// Text node - contains literal text content.
+  /// Always has type "text" and contains a string value.
+  record node-text {
+    /// Common node data (type is always "text")
+    data: node-data,
+    /// Text content
+    content: text-content,
+  }
+
+  /// Parent node - has children but no direct text value.
+  /// Used for structural elements like paragraphs, headings, lists, etc.
+  record node-parent {
+    /// Common node data (type varies: "paragraph", "heading", "list", etc.)
+    data: node-data,
+    /// Child nodes
+    children: children,
+  }
+
+  /// Literal node - similar to text but can have additional metadata.
+  /// Used for nodes that have both text content and properties.
+  record node-literal {
+    /// Common node data
+    data: node-data,
+    /// Text content
+    content: text-content,
+  }
+
+  /// Generic node - fully flexible JSON representation.
+  /// Used for format-specific node types that don't fit the standard categories.
+  /// The JSON structure should follow unist conventions.
+  record node-generic {
+    /// JSON-encoded complete node structure
+    /// Must include at least: `{"type": "node-type-name"}`
+    /// May include: position, children, value, properties, etc.
+    data: json-value,
+  }
+
+  /// A complete syntax tree with indexed nodes.
+  /// Uses a flat structure with node IDs to simplify serialization
+  /// and enable efficient tree traversal in WASM components.
+  record syntax-tree {
+    /// The root node ID (entry point to the tree)
+    root-id: node-id,
+    /// Map of node ID to node (represented as list of tuples for WIT compatibility)
+    /// In practice, this would be serialized as JSON or a custom binary format
+    nodes: list<tuple<node-id, node>>,
+  }
+}
+
+/// Virtual file representation following the VFile specification.
+/// See: https://github.com/vfile/vfile
+interface vfile {
+  use common.{message, metadata};
+
+  /// Represents the content of a file.
+  /// Can be either text or binary data.
+  variant file-content {
+    /// Text content (UTF-8 string)
+    text(string),
+    /// Binary content
+    binary(list<u8>),
+  }
+
+  /// History entry tracking the path of a file through transformations.
+  /// VFiles can track their path history as they move through the pipeline.
+  record history-entry {
+    /// Previous path
+    path: string,
+    /// Optional base directory for this path
+    base: option<string>,
+  }
+
+  /// Virtual file representation.
+  /// VFile is the container that flows through the entire pipeline,
+  /// carrying content, metadata, and accumulated messages.
+  record virtual-file {
+    /// File path (can be relative or absolute)
+    /// Example: "document.md" or "/path/to/document.md"
+    path: option<string>,
+
+    /// Base directory for resolving relative paths
+    /// Example: "/path/to" for path "document.md"
+    base: option<string>,
+
+    /// Working directory (current directory context)
+    cwd: option<string>,
+
+    /// File content (text or binary)
+    content: file-content,
+
+    /// Custom metadata attached to this file
+    /// JSON-encoded for flexibility
+    /// Example: `"{\"matter\": {\"title\": \"Document Title\"}, \"custom\": true}"`
+    data: option<metadata>,
+
+    /// Messages accumulated during processing
+    /// Includes warnings, errors, and informational messages
+    messages: list<message>,
+
+    /// History of path changes
+    /// Tracks how the file path evolved through transformations
+    history: list<history-entry>,
+
+    /// Whether the file was modified
+    /// Can be used to track if transformations changed the content
+    modified: bool,
+
+    /// Source map or other debugging information (optional)
+    /// JSON-encoded for flexibility
+    source-map: option<string>,
+  }
+
+  /// Create a new virtual file with text content
+  new-text-file: func(path: option<string>, content: string) -> virtual-file;
+
+  /// Create a new virtual file with binary content
+  new-binary-file: func(path: option<string>, content: list<u8>) -> virtual-file;
+
+  /// Add a message to a virtual file
+  add-message: func(file: virtual-file, msg: message) -> virtual-file;
+
+  /// Get the content as text (fails if content is binary)
+  get-text-content: func(file: virtual-file) -> result<string, string>;
+
+  /// Get the content as binary
+  get-binary-content: func(file: virtual-file) -> list<u8>;
+
+  /// Clone a virtual file with new content
+  with-content: func(file: virtual-file, content: file-content) -> virtual-file;
+
+  /// Set metadata on a virtual file
+  with-metadata: func(file: virtual-file, data: metadata) -> virtual-file;
+}
+
+/// Parser component interface.
+/// Parsers convert input (text or binary) into an Abstract Syntax Tree (AST).
+interface parser {
+  use vfile.{virtual-file};
+  use ast.{syntax-tree};
+  use errors.{parse-error};
+
+  /// Parse input into a syntax tree.
+  ///
+  /// Takes a virtual file containing the input content and converts it
+  /// into a structured syntax tree representation.
+  ///
+  /// # Parameters
+  /// - `file`: Virtual file containing the content to parse
+  ///
+  /// # Returns
+  /// - `Ok(parse-result)`: Successfully parsed syntax tree and updated file
+  /// - `Err(parse-error)`: Parsing failed with error details
+  ///
+  /// # Notes
+  /// - The parser may add messages (warnings, info) to the file even on success
+  /// - The returned file may have modified metadata (e.g., frontmatter extraction)
+  /// - Parsers should be pure and not have side effects
+  parse: func(file: virtual-file) -> result<parse-result, parse-error>;
+
+  /// Result of a successful parse operation.
+  /// Includes both the syntax tree and the (potentially modified) virtual file.
+  record parse-result {
+    /// The parsed syntax tree
+    tree: syntax-tree,
+    /// The virtual file (may include added messages or updated metadata)
+    file: virtual-file,
+  }
+
+  /// Get information about this parser.
+  /// Returns metadata about the parser's capabilities and configuration.
+  get-info: func() -> parser-info;
+
+  /// Parser metadata and capabilities.
+  record parser-info {
+    /// Parser name/identifier (e.g., "markdown-parser", "asciidoc-parser")
+    name: string,
+    /// Human-readable description
+    description: string,
+    /// Version of the parser
+    version: string,
+    /// Supported input formats/MIME types
+    /// Example: ["text/markdown", "text/x-markdown"]
+    supported-formats: list<string>,
+    /// Optional configuration schema (JSON Schema as string)
+    config-schema: option<string>,
+  }
+
+  /// Configure the parser with options.
+  /// Allows runtime configuration of parser behavior.
+  ///
+  /// # Parameters
+  /// - `config`: JSON-encoded configuration object
+  ///
+  /// # Returns
+  /// - `Ok(())`: Configuration applied successfully
+  /// - `Err(string)`: Configuration error message
+  ///
+  /// # Notes
+  /// - Configuration format is parser-specific
+  /// - Refer to `parser-info.config-schema` for the expected structure
+  configure: func(config: string) -> result<_, string>;
+}
+
+/// Transformer component interface.
+/// Transformers modify an Abstract Syntax Tree (AST) and return a new/modified tree.
+interface transformer {
+  use vfile.{virtual-file};
+  use ast.{syntax-tree};
+  use errors.{transform-error};
+
+  /// Transform a syntax tree.
+  ///
+  /// Takes a syntax tree and virtual file, applies transformations,
+  /// and returns a modified tree and file.
+  ///
+  /// # Parameters
+  /// - `tree`: The input syntax tree to transform
+  /// - `file`: Virtual file for context and message accumulation
+  ///
+  /// # Returns
+  /// - `Ok(transform-result)`: Successfully transformed tree and updated file
+  /// - `Err(transform-error)`: Transformation failed with error details
+  ///
+  /// # Notes
+  /// - Transformers should not mutate the input tree (immutable transformations)
+  /// - Multiple transformers can be chained together
+  /// - Transformers may add messages to the file for warnings/info
+  /// - Transformers should be pure and not have side effects
+  transform: func(tree: syntax-tree, file: virtual-file) -> result<transform-result, transform-error>;
+
+  /// Result of a successful transform operation.
+  record transform-result {
+    /// The transformed syntax tree
+    tree: syntax-tree,
+    /// The virtual file (may include added messages or updated metadata)
+    file: virtual-file,
+  }
+
+  /// Get information about this transformer.
+  /// Returns metadata about the transformer's capabilities and configuration.
+  get-info: func() -> transformer-info;
+
+  /// Transformer metadata and capabilities.
+  record transformer-info {
+    /// Transformer name/identifier (e.g., "heading-id-injector", "link-rewriter")
+    name: string,
+    /// Human-readable description
+    description: string,
+    /// Version of the transformer
+    version: string,
+    /// Node types this transformer operates on (empty list means all types)
+    /// Example: ["heading", "link", "image"]
+    target-node-types: list<string>,
+    /// Whether this transformer modifies the tree structure (adds/removes nodes)
+    /// or only modifies node properties
+    modifies-structure: bool,
+    /// Optional configuration schema (JSON Schema as string)
+    config-schema: option<string>,
+  }
+
+  /// Configure the transformer with options.
+  /// Allows runtime configuration of transformer behavior.
+  ///
+  /// # Parameters
+  /// - `config`: JSON-encoded configuration object
+  ///
+  /// # Returns
+  /// - `Ok(())`: Configuration applied successfully
+  /// - `Err(string)`: Configuration error message
+  ///
+  /// # Notes
+  /// - Configuration format is transformer-specific
+  /// - Refer to `transformer-info.config-schema` for expected structure
+  configure: func(config: string) -> result<_, string>;
+}
+
+/// Compiler component interface.
+/// Compilers convert an Abstract Syntax Tree (AST) into output format (text or binary).
+interface compiler {
+  use vfile.{virtual-file, file-content};
+  use ast.{syntax-tree};
+  use errors.{compile-error};
+
+  /// Compile a syntax tree into output format.
+  ///
+  /// Takes a syntax tree and virtual file, generates output content,
+  /// and returns the result as a virtual file.
+  ///
+  /// # Parameters
+  /// - `tree`: The syntax tree to compile
+  /// - `file`: Virtual file for context and message accumulation
+  ///
+  /// # Returns
+  /// - `Ok(compile-result)`: Successfully compiled output
+  /// - `Err(compile-error)`: Compilation failed with error details
+  ///
+  /// # Notes
+  /// - The output format (text vs binary) depends on the compiler type
+  /// - Compilers may add messages to the file for warnings/info
+  /// - The returned file contains the compiled content
+  /// - Compilers should be pure and not have side effects
+  compile: func(tree: syntax-tree, file: virtual-file) -> result<compile-result, compile-error>;
+
+  /// Result of a successful compile operation.
+  record compile-result {
+    /// The virtual file with compiled content
+    /// The file.content field contains the output
+    file: virtual-file,
+  }
+
+  /// Get information about this compiler.
+  /// Returns metadata about the compiler's capabilities and configuration.
+  get-info: func() -> compiler-info;
+
+  /// Compiler metadata and capabilities.
+  record compiler-info {
+    /// Compiler name/identifier (e.g., "html-compiler", "docx-compiler")
+    name: string,
+    /// Human-readable description
+    description: string,
+    /// Version of the compiler
+    version: string,
+    /// Output format/MIME type
+    /// Example: "text/html", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    output-format: string,
+    /// Whether output is text or binary
+    output-is-binary: bool,
+    /// Optional configuration schema (JSON Schema as string)
+    config-schema: option<string>,
+  }
+
+  /// Configure the compiler with options.
+  /// Allows runtime configuration of compiler behavior.
+  ///
+  /// # Parameters
+  /// - `config`: JSON-encoded configuration object
+  ///
+  /// # Returns
+  /// - `Ok(())`: Configuration applied successfully
+  /// - `Err(string)`: Configuration error message
+  ///
+  /// # Examples
+  /// - HTML compiler: `{"pretty": true, "minify": false}`
+  /// - PDF compiler: `{"pageSize": "A4", "margins": {"top": 20}}`
+  ///
+  /// # Notes
+  /// - Configuration format is compiler-specific
+  /// - Refer to `compiler-info.config-schema` for expected structure
+  configure: func(config: string) -> result<_, string>;
+}

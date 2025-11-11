@@ -1,5 +1,3 @@
-package ndoctrinate:types@0.1.0;
-
 /// Abstract Syntax Tree (AST) types following the unist specification.
 /// See: https://github.com/syntax-tree/unist
 interface ast {

@@ -1,5 +1,3 @@
-package ndoctrinate:types@0.1.0;
-
 /// Common types and primitives used across the pipeline components.
 interface common {
   /// Represents a single point in a text document.

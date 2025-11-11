@@ -1,11 +1,9 @@
-package ndoctrinate:components@0.1.0;
-
 /// Transformer component interface.
 /// Transformers modify an Abstract Syntax Tree (AST) and return a new/modified tree.
 interface transformer {
-  use ndoctrinate:types/vfile.{virtual-file};
-  use ndoctrinate:types/ast.{syntax-tree};
-  use ndoctrinate:types/errors.{transform-error};
+  use vfile.{virtual-file};
+  use ast.{syntax-tree};
+  use errors.{transform-error};
 
   /// Transform a syntax tree.
   ///

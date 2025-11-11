@@ -1,5 +1,3 @@
-package ndoctrinate:types@0.1.0;
-
 /// Error types for pipeline operations.
 /// Uses algebraic data types (variants) to represent different error categories.
 interface errors {

@@ -1,5 +1,3 @@
-package ndoctrinate:types@0.1.0;
-
 /// Virtual file representation following the VFile specification.
 /// See: https://github.com/vfile/vfile
 interface vfile {

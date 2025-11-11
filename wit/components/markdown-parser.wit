@@ -1,5 +1,3 @@
-package ndoctrinate:components@0.1.0;
-
 /// Example: Markdown Parser Component
 ///
 /// This file demonstrates how to create a concrete parser implementation
@@ -9,7 +7,7 @@ package ndoctrinate:components@0.1.0;
 /// Markdown-specific AST node types.
 /// These extend the base unist node types with Markdown-specific structures.
 interface markdown-types {
-  use ndoctrinate:types/ast.{node-data, children};
+  use ast.{node-data, children};
 
   /// Heading node (h1-h6)
   record heading {
@@ -175,13 +173,13 @@ interface markdown-config {
 /// This demonstrates a concrete implementation using the pipeline-parser world.
 world markdown-parser-component {
   /// Export the standard parser interface
-  export ndoctrinate:components/parser;
+  export parser;
 
   /// Export Markdown-specific configuration
   export markdown-config;
 
   /// Import host capabilities
-  import ndoctrinate:pipeline/host-capabilities;
+  import host-capabilities;
 
   /// Export Markdown-specific types (for advanced usage)
   export markdown-types;

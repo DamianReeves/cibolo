@@ -1,0 +1,73 @@
+{
+  "name": "ndoctrinate-wit",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "wit",
+  "projectType": "library",
+  "tags": ["type:wit", "scope:wasm", "scope:components"],
+  "targets": {
+    "validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wasm-tools component wit . --all-features",
+        "cwd": "wit"
+      },
+      "cache": true
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "wasm-tools component wit . --all-features",
+          "bunx prettier --check \"**/*.md\""
+        ],
+        "cwd": "wit",
+        "parallel": false
+      },
+      "cache": true
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx prettier --write \"**/*.md\"",
+        "cwd": "wit"
+      },
+      "cache": true
+    },
+    "verify": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "wasm-tools component wit . --all-features",
+          "bunx prettier --check \"**/*.md\""
+        ],
+        "cwd": "wit",
+        "parallel": false
+      },
+      "cache": true
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wasm-tools component wit . --all-features",
+        "cwd": "wit"
+      },
+      "dependsOn": ["verify"],
+      "cache": true
+    },
+    "doc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wasm-tools component wit . --all-features --document",
+        "cwd": "wit"
+      },
+      "cache": true
+    },
+    "inspect": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wasm-tools component wit . --all-features --json",
+        "cwd": "wit"
+      }
+    }
+  }
+}

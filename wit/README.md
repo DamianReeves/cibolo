@@ -52,6 +52,7 @@ wit/
 ### Virtual File (VFile)
 
 The `virtual-file` type flows through the entire pipeline, carrying:
+
 - File content (text or binary)
 - Metadata (JSON-encoded for flexibility)
 - Path information (path, base, cwd)
@@ -130,6 +131,7 @@ interface parser {
 ```
 
 **Key Features:**
+
 - Takes a `virtual-file` as input
 - Returns `parse-result` with both tree and updated file
 - Supports runtime configuration via JSON
@@ -149,6 +151,7 @@ interface transformer {
 ```
 
 **Key Features:**
+
 - Takes tree and file as input (immutable transformation)
 - Returns new tree and updated file
 - Can be chained with other transformers
@@ -168,6 +171,7 @@ interface compiler {
 ```
 
 **Key Features:**
+
 - Takes tree and file as input
 - Returns file with compiled content
 - Supports both text and binary output
@@ -231,6 +235,7 @@ interface host-capabilities {
 ### Step 1: Choose Your Language
 
 Pick a language that can compile to WebAssembly Component Model:
+
 - **MoonBit**: First-class WASM component support (recommended for Ndoctrinate)
 - **Rust**: Use `wit-bindgen` for binding generation
 - **Go**: Use TinyGo with WASI support
@@ -239,6 +244,7 @@ Pick a language that can compile to WebAssembly Component Model:
 ### Step 2: Choose Your Component Type
 
 Decide which interface(s) to implement:
+
 - Parser only (most common starting point)
 - Transformer only (for AST modifications)
 - Compiler only (for output generation)
@@ -249,17 +255,20 @@ Decide which interface(s) to implement:
 Use language-specific tools to generate bindings from WIT:
 
 **MoonBit:**
+
 ```bash
 # MoonBit has built-in WIT support
 moon build --target wasm-gc
 ```
 
 **Rust:**
+
 ```bash
 wit-bindgen rust ./wit
 ```
 
 **Go:**
+
 ```bash
 wit-bindgen tiny-go ./wit
 ```
@@ -269,6 +278,7 @@ wit-bindgen tiny-go ./wit
 Implement the exported functions:
 
 **Example: Parser in MoonBit (pseudocode)**
+
 ```moonbit
 // Implement the parse function
 pub fn parse(file : VirtualFile) -> Result[ParseResult, ParseError] {
@@ -332,6 +342,7 @@ const result = await parse(file)
 ### Markdown Parser
 
 See [`components/markdown-parser.wit`](./components/markdown-parser.wit) for a complete example showing:
+
 - Markdown-specific AST node types
 - Configuration options (GFM, frontmatter, math, etc.)
 - How to extend the base parser interface
@@ -355,6 +366,7 @@ The WIT definitions use a hybrid approach:
 2. **JSON-encoded strings** for flexible, extensible data (metadata, properties, generic nodes)
 
 This provides:
+
 - **Type safety** at component boundaries
 - **Flexibility** for format-specific extensions
 - **Simplicity** in serialization
@@ -376,6 +388,7 @@ variant node {
 ```
 
 This ensures:
+
 - **Exhaustive pattern matching** in implementing languages
 - **Type-safe error handling** with `result<T, E>`
 - **Clear data modeling** following functional principles
@@ -384,17 +397,18 @@ This ensures:
 
 The WIT interfaces map to the existing TypeScript Effect-based pipeline:
 
-| WIT Type | TypeScript Type |
-|----------|-----------------|
-| `virtual-file` | `VFile` |
-| `syntax-tree` | `Root` (unist) |
-| `node` | `Node` (unist) |
-| `result<T, parse-error>` | `Effect<T, ParseError>` |
-| `parser.parse()` | `Parser.parse()` |
+| WIT Type                  | TypeScript Type           |
+| ------------------------- | ------------------------- |
+| `virtual-file`            | `VFile`                   |
+| `syntax-tree`             | `Root` (unist)            |
+| `node`                    | `Node` (unist)            |
+| `result<T, parse-error>`  | `Effect<T, ParseError>`   |
+| `parser.parse()`          | `Parser.parse()`          |
 | `transformer.transform()` | `Transformer.transform()` |
-| `compiler.compile()` | `Compiler.compile()` |
+| `compiler.compile()`      | `Compiler.compile()`      |
 
 The host runtime (TypeScript) handles:
+
 - Effect composition and execution
 - Component loading and instantiation
 - Pipeline orchestration
@@ -407,16 +421,16 @@ The host runtime (TypeScript) handles:
 Test WASM components in isolation:
 
 ```typescript
-import { parse } from './parser.wasm'
+import { parse } from "./parser.wasm";
 
-describe('Markdown Parser', () => {
-  it('should parse headings', async () => {
-    const file = createVirtualFile('# Hello')
-    const result = await parse(file)
+describe("Markdown Parser", () => {
+  it("should parse headings", async () => {
+    const file = createVirtualFile("# Hello");
+    const result = await parse(file);
 
-    expect(result.tree.nodes).toContainNodeType('heading')
-  })
-})
+    expect(result.tree.nodes).toContainNodeType("heading");
+  });
+});
 ```
 
 ### Integration Testing
@@ -425,11 +439,11 @@ Test full pipeline with multiple components:
 
 ```typescript
 const processor = new Processor()
-  .use(wasmParser)       // WASM markdown parser
-  .use(headingIdPlugin)  // TypeScript transformer
-  .use(wasmCompiler)     // WASM HTML compiler
+  .use(wasmParser) // WASM markdown parser
+  .use(headingIdPlugin) // TypeScript transformer
+  .use(wasmCompiler); // WASM HTML compiler
 
-const result = await processor.process('# Hello')
+const result = await processor.process("# Hello");
 ```
 
 ## Performance Considerations

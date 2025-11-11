@@ -1,0 +1,41 @@
+{
+  "name": "@ndoctrinate/wit",
+  "version": "0.1.0",
+  "description": "WebAssembly Interface Types definitions for Ndoctrinate document processing pipeline",
+  "type": "module",
+  "private": true,
+  "author": "Ndoctrinate Contributors",
+  "license": "MIT",
+  "exports": {
+    ".": "./world.wit",
+    "./types/*": "./types/*.wit",
+    "./components/*": "./components/*.wit"
+  },
+  "files": [
+    "world.wit",
+    "types/**/*.wit",
+    "components/**/*.wit",
+    "deps/**/*.wit",
+    "README.md"
+  ],
+  "scripts": {
+    "validate": "wasm-tools component wit . --all-features",
+    "lint": "wasm-tools component wit . --all-features && prettier --check \"**/*.wit\" \"**/*.md\"",
+    "format": "prettier --write \"**/*.wit\" \"**/*.md\"",
+    "verify": "npm run lint",
+    "check": "npm run validate",
+    "doc": "wasm-tools component wit . --all-features --document",
+    "inspect": "wasm-tools component wit . --all-features --json"
+  },
+  "keywords": [
+    "webassembly",
+    "wasm",
+    "component-model",
+    "wit",
+    "parser",
+    "transformer",
+    "compiler",
+    "pipeline",
+    "document-processing"
+  ]
+}
