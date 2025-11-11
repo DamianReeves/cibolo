@@ -12,6 +12,8 @@
     "build": "bun run build.ts",
     "clean": "rm -rf dist",
     "test": "bun test",
+    "format": "bunx prettier --write \"src/**/*.{ts,tsx,json}\"",
+    "lint": "bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\" --fix",
     "verify": "bun run --bun tsc --noEmit && bunx prettier --check \"src/**/*.{ts,tsx,json}\" && bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\"",
     "check": "bun run ../../../scripts/check.ts verify test"
   },

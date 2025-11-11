@@ -277,9 +277,43 @@ Build everything using Make:
 make build
 ```
 
+### Format and Lint Code
+
+This project uses a **hybrid formatting approach** combining script-based and Nx-native formatting:
+
+#### Script-Based Formatting (Per-Project)
+Format code in specific projects:
+```bash
+nx run ndoctrinate-core:format    # Format core library
+nx run ndoctrinate:format         # Format CLI
+nx run-many -t format             # Format all projects
+nx affected -t format             # Format only affected projects
+```
+
+Fix lint issues:
+```bash
+nx run ndoctrinate-core:lint      # Fix lint in core
+nx run-many -t lint               # Fix lint in all projects
+nx affected -t lint               # Fix lint in affected projects
+```
+
+#### Combined Format + Lint
+```bash
+# Format and lint all projects
+nx run-many -t format && nx run-many -t lint
+
+# Format and lint only affected
+nx affected -t format && nx affected -t lint
+```
+
+**Benefits of Script-Based Approach:**
+- Explicit control per project
+- Cached by Nx (skips unchanged files)
+- Easy to customize per-project
+
 ### Verify Code Quality
 
-Run type checking, linting, and formatting checks:
+Run type checking, linting, and formatting checks (read-only):
 ```bash
 nx run-many -t verify    # All projects
 nx affected -t verify    # Only affected projects

@@ -12,6 +12,12 @@
     "test": {
       "cache": true
     },
+    "format": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    },
     "verify": {
       "dependsOn": ["^build"],
       "cache": true
@@ -48,7 +54,7 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "test", "verify", "check"]
+        "cacheableOperations": ["build", "test", "format", "lint", "verify", "check"]
       }
     }
   }

@@ -116,6 +116,10 @@ nx daemon --stop                 # Stop Nx daemon
 | Test affected only | `nx affected -t test` |
 | Build all | `nx run-many -t build` |
 | Build affected | `nx affected -t build` |
+| Format all | `nx run-many -t format` |
+| Format affected | `nx affected -t format` |
+| Lint all | `nx run-many -t lint` |
+| Lint affected | `nx affected -t lint` |
 | Verify all | `nx run-many -t verify` |
 | Verify affected | `nx affected -t verify` |
 | Check all (verify + test) | `nx run-many -t check` |
@@ -131,14 +135,26 @@ Add these to your `~/.bashrc`, `~/.zshrc`, or `~/.config/fish/config.fish`:
 
 ### Bash/Zsh
 ```bash
-# Nx shortcuts
+# Nx shortcuts - Build & Test
 alias nxb="nx run-many -t build"
 alias nxt="nx run-many -t test"
 alias nxv="nx run-many -t verify"
 alias nxc="nx run-many -t check"
+
+# Nx shortcuts - Format & Lint
+alias nxf="nx run-many -t format"
+alias nxl="nx run-many -t lint"
+alias nxfix="nx run-many -t format && nx run-many -t lint"
+
+# Nx shortcuts - Affected
 alias nxba="nx affected -t build"
 alias nxta="nx affected -t test"
 alias nxva="nx affected -t verify"
+alias nxfa="nx affected -t format"
+alias nxla="nx affected -t lint"
+alias nxfixa="nx affected -t format && nx affected -t lint"
+
+# Nx shortcuts - Utilities
 alias nxg="nx graph"
 alias nxp="nx show projects"
 alias nxr="nx reset"
@@ -146,14 +162,26 @@ alias nxr="nx reset"
 
 ### Fish Shell
 ```fish
-# Nx shortcuts
+# Nx shortcuts - Build & Test
 alias nxb="nx run-many -t build"
 alias nxt="nx run-many -t test"
 alias nxv="nx run-many -t verify"
 alias nxc="nx run-many -t check"
+
+# Nx shortcuts - Format & Lint
+alias nxf="nx run-many -t format"
+alias nxl="nx run-many -t lint"
+alias nxfix="nx run-many -t format && nx run-many -t lint"
+
+# Nx shortcuts - Affected
 alias nxba="nx affected -t build"
 alias nxta="nx affected -t test"
 alias nxva="nx affected -t verify"
+alias nxfa="nx affected -t format"
+alias nxla="nx affected -t lint"
+alias nxfixa="nx affected -t format && nx affected -t lint"
+
+# Nx shortcuts - Utilities
 alias nxg="nx graph"
 alias nxp="nx show projects"
 alias nxr="nx reset"
