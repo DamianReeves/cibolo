@@ -209,6 +209,222 @@ The CLI provides two main capabilities:
 - Property-based tests for complex transformations
 - Test error cases and edge conditions
 
+## Nx Workspace Management
+
+The TypeScript monorepo uses **Nx** for intelligent task running, caching, and dependency management. This enables fast, efficient development through computation caching and smart task execution.
+
+### Key Features
+
+1. **Task Inference**: Nx automatically discovers projects and infers tasks from package.json scripts
+   - Each TypeScript project under `projects/typescript/` is an Nx project
+   - Tasks like `build`, `test`, `verify` are inferred from package.json scripts
+   - No manual configuration needed for basic tasks
+
+2. **Intelligent Caching**: Nx caches task outputs based on file content and configuration
+   - Skip re-running unchanged code
+   - Cache is content-addressable (based on file hashes)
+   - Shared across team members via Nx Cloud (optional)
+
+3. **Dependency Graph**: Nx builds and maintains a project dependency graph
+   - Runs tasks in correct order based on dependencies
+   - Visualize with `nx graph`
+   - CLI depends on core and tools libraries
+
+4. **Affected Commands**: Run tasks only on projects affected by changes
+   - `nx affected -t test` tests only what changed
+   - Dramatically speeds up CI pipelines
+   - Compares against a base branch (default: main)
+
+### Command Patterns
+
+This project uses **direct Nx commands** instead of wrapper scripts for explicitness and flexibility.
+
+#### Single Project Tasks
+```bash
+nx run <project-name>:<target> [args]
+
+# Examples:
+nx run ndoctrinate-core:test          # Test core library
+nx run ndoctrinate:build              # Build CLI
+nx run ndoctrinate:dev version        # Run CLI with args
+```
+
+#### Multi-Project Tasks
+```bash
+nx run-many -t <target> [options]
+
+# Examples:
+nx run-many -t test                   # Test all projects
+nx run-many -t build                  # Build all projects
+nx run-many -t verify                 # Type-check & lint all
+nx run-many -t test --parallel=3      # Control parallelism
+```
+
+#### Affected-Only Tasks
+```bash
+nx affected -t <target> [options]
+
+# Examples:
+nx affected -t test                   # Test affected projects
+nx affected -t build                  # Build affected projects
+nx affected -t verify --base=main     # Compare against main
+```
+
+#### Utility Commands
+```bash
+nx graph                              # Visualize dependencies
+nx show projects                      # List all projects
+nx show projects --affected           # List affected projects
+nx reset                              # Clear cache
+```
+
+### Project Configuration
+
+Each TypeScript project has two configuration files:
+
+1. **package.json**: Defines npm scripts that Nx infers as tasks
+   ```json
+   {
+     "scripts": {
+       "test": "bun test",
+       "verify": "bun run --bun tsc --noEmit && bunx prettier --check ..."
+     }
+   }
+   ```
+
+2. **project.json**: Nx-specific configuration for advanced control
+   ```json
+   {
+     "name": "ndoctrinate-core",
+     "targets": {
+       "test": {
+         "executor": "nx:run-commands",
+         "options": { "command": "bun test" }
+       }
+     },
+     "tags": ["type:library", "scope:core"]
+   }
+   ```
+
+### Workspace Configuration
+
+**nx.json** at the repository root defines:
+
+- **Task Presets**: Inherits from `nx/presets/npm.json` for automatic task inference
+- **Target Defaults**: Global configuration for caching and dependencies
+  ```json
+  {
+    "targetDefaults": {
+      "build": {
+        "dependsOn": ["^build"],  // Build dependencies first
+        "cache": true
+      }
+    }
+  }
+  ```
+- **Named Inputs**: Define what files affect cache keys (source files, configs, etc.)
+- **Affected Base**: Default branch for affected comparisons (main)
+
+### Caching Behavior
+
+Nx caches based on:
+- Project source files (`{projectRoot}/**/*`)
+- Project configuration files (package.json, project.json, tsconfig.json)
+- Shared configuration (root .eslintrc.json, .prettierrc.json)
+- Dependency outputs (for tasks with `dependsOn`)
+
+**Cache Location**: `.nx/cache` (gitignored)
+
+**Cache Operations**:
+- First run: Executes and caches
+- Subsequent runs: Restores from cache if inputs unchanged
+- `nx reset`: Clears cache for debugging
+
+### CI/CD Integration
+
+Use affected commands in CI to speed up pipelines:
+
+```yaml
+# Example GitHub Actions workflow
+- name: Test affected projects
+  run: nx affected -t test --base=origin/main
+
+- name: Build affected projects
+  run: nx affected -t build --base=origin/main
+```
+
+This ensures CI only runs tasks on changed projects, dramatically reducing build times.
+
+### Development Tips
+
+1. **Shell Aliases**: Set up aliases for common commands
+   ```bash
+   alias nxb="nx run-many -t build"
+   alias nxt="nx run-many -t test"
+   alias nxta="nx affected -t test"
+   alias nxg="nx graph"
+   ```
+
+2. **Project Tags**: Use tags in project.json for filtering
+   ```bash
+   nx run-many -t test --projects=tag:type:library
+   ```
+
+3. **Verbose Output**: Debug task execution
+   ```bash
+   nx run ndoctrinate-core:test --verbose
+   ```
+
+4. **Skip Cache**: Bypass cache for debugging
+   ```bash
+   nx run ndoctrinate-core:test --skip-nx-cache
+   ```
+
+### Documentation
+
+- **Comprehensive Guide**: [.claude/nx-commands-guide.md](.claude/nx-commands-guide.md)
+  - Detailed command patterns
+  - Shell alias recommendations
+  - Advanced usage examples
+  - CI/CD integration patterns
+  - Troubleshooting tips
+
+- **Developer Guide**: [DEVELOPING.md](DEVELOPING.md)
+  - Quick start examples
+  - Common development tasks
+  - Project structure details
+
+### Important Notes for AI Agents
+
+When working with this codebase:
+
+1. **Use Direct Commands**: Don't add wrapper scripts to root package.json
+   - Use `nx run-many -t test` instead of creating a "test" script
+   - Keeps commands explicit and flexible
+
+2. **Task Inference**: Nx automatically finds tasks from package.json
+   - Adding a "build" script to a project's package.json creates an `nx run project:build` task
+   - No need to manually register tasks in most cases
+
+3. **Dependency Management**: Use `dependsOn` in project.json for task dependencies
+   ```json
+   {
+     "targets": {
+       "verify": {
+         "dependsOn": ["^build"]  // Builds dependencies first
+       }
+     }
+   }
+   ```
+
+4. **Running Tasks**: Always prefer `nx` commands over direct script execution
+   - ✅ `nx run ndoctrinate-core:test` (uses cache, respects dependencies)
+   - ❌ `cd projects/typescript/core && bun test` (bypasses Nx)
+
+5. **Affected Analysis**: When suggesting CI improvements, use affected commands
+   - Reduces CI time from minutes to seconds for focused changes
+   - Only runs what's necessary based on changed files
+
 ## Future Considerations
 
 - Integration of Gleam components for additional functionality
@@ -219,12 +435,20 @@ The CLI provides two main capabilities:
 
 ## Resources
 
+### Core Technologies
 - [Moonbit Documentation](https://www.moonbitlang.com/)
 - [WASM Component Model](https://component-model.bytecodealliance.org/)
 - [jco Tooling](https://github.com/bytecodealliance/jco)
 - [wasm-tools](https://github.com/bytecodealliance/wasm-tools)
-- [mill Build Tool](https://com-lihaoyi.github.io/mill/)
 - [Bun Documentation](https://bun.sh/docs)
+
+### Build & Development Tools
+- [mill Build Tool](https://com-lihaoyi.github.io/mill/)
+- [Nx](https://nx.dev/)
+- [Nx Task Pipeline Configuration](https://nx.dev/concepts/task-pipeline-configuration)
+- [Nx Affected Commands](https://nx.dev/concepts/affected)
+
+### TypeScript Frameworks
 - [ElysiaJS](https://elysiajs.com/)
 - [Eden](https://elysiajs.com/eden/overview.html)
 - [ArkType](https://arktype.io/)
