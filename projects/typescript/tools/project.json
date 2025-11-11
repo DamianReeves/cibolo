@@ -1,0 +1,37 @@
+{
+  "name": "ndoctrinate-tools",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/typescript/tools/src",
+  "projectType": "library",
+  "tags": ["type:library", "scope:tools"],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun test",
+        "cwd": "projects/typescript/tools"
+      }
+    },
+    "verify": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "bun run --bun tsc --noEmit",
+          "bunx prettier --check \"src/**/*.{ts,tsx,json}\"",
+          "bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\""
+        ],
+        "cwd": "projects/typescript/tools",
+        "parallel": false
+      },
+      "dependsOn": ["^build"]
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run ../../../scripts/check.ts verify test",
+        "cwd": "projects/typescript/tools"
+      },
+      "dependsOn": ["verify", "test"]
+    }
+  }
+}

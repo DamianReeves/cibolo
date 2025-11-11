@@ -1,0 +1,17 @@
+{
+  "name": "simple-pipeline-example",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/typescript/examples/simple-pipeline/src",
+  "projectType": "application",
+  "tags": ["type:example", "scope:examples"],
+  "targets": {
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run src/index.ts",
+        "cwd": "projects/typescript/examples/simple-pipeline"
+      },
+      "dependsOn": ["^build"]
+    }
+  }
+}

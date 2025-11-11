@@ -1,0 +1,60 @@
+{
+  "name": "ndoctrinate",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/typescript/cli/src",
+  "projectType": "application",
+  "tags": ["type:application", "scope:cli"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run build.ts",
+        "cwd": "projects/typescript/cli"
+      },
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run src/index.ts",
+        "cwd": "projects/typescript/cli"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf dist",
+        "cwd": "projects/typescript/cli"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun test",
+        "cwd": "projects/typescript/cli"
+      }
+    },
+    "verify": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "bun run --bun tsc --noEmit",
+          "bunx prettier --check \"src/**/*.{ts,tsx,json}\"",
+          "bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\""
+        ],
+        "cwd": "projects/typescript/cli",
+        "parallel": false
+      },
+      "dependsOn": ["^build"]
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run ../../../scripts/check.ts verify test",
+        "cwd": "projects/typescript/cli"
+      },
+      "dependsOn": ["verify", "test"]
+    }
+  }
+}

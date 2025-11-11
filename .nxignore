@@ -1,0 +1,23 @@
+# Nx cache and build outputs
+.nx
+node_modules
+dist
+out
+
+# Mill build system (Scala)
+.bsp
+mill-build
+
+# IDE
+.vscode
+.metals
+.idea
+
+# Dev container
+.devcontainer
+
+# Git
+.git
+
+# Config
+.config

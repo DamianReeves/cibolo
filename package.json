@@ -10,17 +10,27 @@
   "private": true,
   "scripts": {
     "setup": "make setup",
-    "cli": "bun run projects/typescript/cli/src/index.ts",
+    "cli": "nx run ndoctrinate:dev",
     "ndoctrinate": "./projects/typescript/cli/dist/ndoctrinate",
-    "verify": "bun run --workspaces verify",
-    "check": "bun run scripts/check-workspaces.ts",
-    "example:simple-pipeline": "bun run --filter simple-pipeline-example start"
+    "build": "nx run-many -t build",
+    "build:affected": "nx affected -t build",
+    "test": "nx run-many -t test",
+    "test:affected": "nx affected -t test",
+    "verify": "nx run-many -t verify",
+    "verify:affected": "nx affected -t verify",
+    "check": "nx run-many -t check",
+    "check:affected": "nx affected -t check",
+    "example:simple-pipeline": "nx run simple-pipeline-example:start",
+    "graph": "nx graph",
+    "reset": "nx reset"
   },
   "devDependencies": {
+    "@nx/js": "^22.0.3",
     "@typescript-eslint/eslint-plugin": "^8.46.4",
     "@typescript-eslint/parser": "^8.46.4",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.1.8",
+    "nx": "^22.0.3",
     "prettier": "^3.2.5"
   }
 }

@@ -20,3 +20,17 @@ target/
 # Build outputs
 dist/
 projects/**/dist/
+
+# Nx
+.nx/
+.nx/cache
+
+# Nx generated files
+graph.html
+static/
+runtime.js
+main.js
+styles.js
+environment.js
+styles.css
+favicon.ico

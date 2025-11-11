@@ -11,12 +11,16 @@ make docker-run
 ```
 - Build CLI and run a quick sanity check:
 ```bash
-make build-cli
+bun run build
 ./projects/typescript/cli/dist/ndoctrinate version
 ```
 - Run tests:
 ```bash
 bun test
+```
+- View project dependency graph:
+```bash
+bun run graph
 ```
 
 ## Overview
@@ -25,6 +29,7 @@ Ndoctrinate is a polyglot monorepo built around the WASM Component Model. Core p
 - **MoonBit**: Primary language for component implementations compiled to WASM.
 - **Rust / WASM Tools**: Tooling for component composition, optimization, binding generation.
 - **Java (GraalVM)**: Native-image and potential JVM-based tooling.
+- **Nx**: Workspace management and task runner with intelligent caching and dependency tracking.
 
 ## Dev Container Usage
 A `.devcontainer/Dockerfile` provides a reproducible environment. It includes:
@@ -105,26 +110,125 @@ make docker-build BUILD_ARGS='--build-arg WIT_BINDGEN_VERSION=0.23.1'
 ## Monorepo Layout
 ```
 projects/
-  typescript/cli        # CLI source (Bun)
-  typescript/core       # Core processing logic
-  typescript/tools      # Document processors
-  moonbit/              # MoonBit WASM components (planned / in progress)
-  shared/               # Shared types and schemas
-  wit/                  # WIT interface definitions
+  typescript/cli              # CLI source (Bun)
+  typescript/core             # Core processing logic
+  typescript/tools            # Document processors
+  typescript/examples/        # Example applications
+  moonbit/                    # MoonBit WASM components (planned / in progress)
+  shared/                     # Shared types and schemas
+  wit/                        # WIT interface definitions
 ```
 
+## Nx Workspace Management
+
+This monorepo uses Nx for intelligent task running, caching, and dependency management. Nx automatically detects project dependencies and runs tasks in the optimal order.
+
+### Key Nx Concepts
+
+- **Projects**: Each package in `projects/typescript/` is an Nx project with its own `project.json`
+- **Targets**: Tasks like `build`, `test`, `verify`, `check` defined per project
+- **Task Graph**: Nx builds a dependency graph and runs tasks in the correct order
+- **Caching**: Successful task runs are cached; unchanged projects skip re-execution
+- **Affected**: Run tasks only on projects affected by your changes
+
+### Common Nx Commands
+
+Run a specific target for one project:
+```bash
+npx nx run <project-name>:<target>
+# Example:
+npx nx run ndoctrinate-core:test
+npx nx run ndoctrinate:build
+```
+
+Run a target across all projects:
+```bash
+npx nx run-many -t <target>
+# Examples:
+bun run build        # Build all projects
+bun run test         # Test all projects
+bun run verify       # Verify all projects (type check, lint, format)
+```
+
+Run a target only on affected projects (since last commit or branch point):
+```bash
+npx nx affected -t <target>
+# Examples:
+bun run build:affected
+bun run test:affected
+bun run verify:affected
+```
+
+Visualize the project dependency graph:
+```bash
+bun run graph        # Opens interactive graph in browser
+npx nx graph --file=graph.html  # Save to file
+```
+
+Clear the Nx cache:
+```bash
+bun run reset
+```
+
+### Project Structure
+
+Each TypeScript project has:
+- `package.json` - Dependencies and npm scripts
+- `project.json` - Nx configuration defining targets and their dependencies
+- `src/` - Source code
+- `tsconfig.json` - TypeScript configuration
+
+### How Caching Works
+
+Nx caches task outputs based on:
+- Project source files
+- Project configuration files
+- Shared configuration (root `.eslintrc.json`, `.prettierrc.json`, etc.)
+- Dependency project outputs (for tasks with `dependsOn`)
+
+When you re-run a task and nothing has changed, Nx restores from cache instantly.
+
+Example:
+```bash
+npx nx run ndoctrinate-core:test  # First run: executes tests
+npx nx run ndoctrinate-core:test  # Second run: reads from cache
+```
+
+### Dependency Management
+
+Projects declare dependencies in their `project.json`:
+```json
+{
+  "targets": {
+    "verify": {
+      "dependsOn": ["^build"]  // Run build on dependencies first
+    }
+  }
+}
+```
+
+The CLI project depends on `core` and `tools`, so building the CLI automatically builds its dependencies first.
+
 ## Common Developer Tasks
+
 ### Install Dependencies (TypeScript)
 Bun automatically installs on first run:
 ```bash
 bun install
 ```
 
-### Run Tests (TypeScript)
+### Run Tests
+Run tests for all projects:
 ```bash
-bun test
+bun run test
+# Or for a specific project:
+npx nx run ndoctrinate-core:test
 ```
-(Or use `make test` if provided.)
+
+Run tests only on affected projects:
+```bash
+bun run test:affected
+```
 
 Shorthand via Make:
 ```bash
@@ -144,21 +248,48 @@ Shorthand via Make:
 make itest
 ```
 
-### Build CLI
-Using Make:
+### Build Projects
+
+Build all projects:
+```bash
+bun run build
+```
+
+Build only affected projects:
+```bash
+bun run build:affected
+```
+
+Build a specific project:
+```bash
+npx nx run ndoctrinate:build
+```
+
+Build CLI using Make:
 ```bash
 make build-cli
 ```
-Or directly:
-```bash
-cd projects/typescript/cli
-bun run build
-./dist/ndoctrinate version
-```
 
-### Build Everything
+Build everything using Make:
 ```bash
 make build
+```
+
+### Verify Code Quality
+
+Run type checking, linting, and formatting checks:
+```bash
+bun run verify           # All projects
+bun run verify:affected  # Only affected projects
+```
+
+### Run Examples
+
+Run the simple pipeline example:
+```bash
+bun run example:simple-pipeline
+# Or directly:
+npx nx run simple-pipeline-example:start
 ```
 
 ### Working with MoonBit Components
@@ -167,6 +298,28 @@ make build
 # Compile MoonBit project (example; adjust to actual commands once added)
 moon build
 # Output WASM component artifacts and integrate via jco/wit-bindgen as needed.
+```
+
+### Debugging and Development Tips
+
+Check which projects are affected by your changes:
+```bash
+npx nx show projects --affected
+```
+
+See what tasks will run for a target:
+```bash
+npx nx show project ndoctrinate-core --with-target=test
+```
+
+Run with verbose output to debug task execution:
+```bash
+npx nx run ndoctrinate-core:test --verbose
+```
+
+Skip Nx cache for debugging:
+```bash
+npx nx run ndoctrinate-core:test --skip-nx-cache
 ```
 
 ### WASM Tooling
