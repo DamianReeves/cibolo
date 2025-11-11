@@ -81,6 +81,13 @@ ndoctrinate/
   - mill orchestrates builds across Moonbit, TypeScript, and other language projects
   - Coordinates WASM component compilation, TypeScript bundling, and integration steps
 
+- **Nx**: Workspace management and task runner for TypeScript projects
+  - Provides intelligent task execution with caching and dependency tracking
+  - Automatically infers tasks from package.json scripts
+  - Enables affected-only builds and tests for CI optimization
+  - Visualizes project dependencies through interactive graphs
+  - See [Nx Workspace Management](#nx-workspace-management) section below for details
+
 ## Development Workflow
 
 ### Documentation Maintenance
