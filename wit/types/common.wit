@@ -1,0 +1,71 @@
+package ndoctrinate:types@0.1.0;
+
+/// Common types and primitives used across the pipeline components.
+interface common {
+  /// Represents a single point in a text document.
+  /// Points are used to specify locations in source files.
+  record point {
+    /// Line number (1-indexed)
+    line: u32,
+    /// Column number (1-indexed)
+    column: u32,
+    /// Character offset from the start of the document (0-indexed)
+    offset: option<u32>,
+  }
+
+  /// Represents a range between two points in a text document.
+  /// Used for specifying the location of nodes, errors, and messages.
+  record position {
+    /// Starting point of the range
+    start: point,
+    /// Ending point of the range
+    end: point,
+  }
+
+  /// Message severity levels for diagnostics, warnings, and errors
+  /// collected during pipeline processing.
+  enum message-severity {
+    /// Informational message
+    info,
+    /// Warning that doesn't prevent processing
+    warning,
+    /// Error that may affect output quality
+    error,
+    /// Fatal error that prevents processing
+    fatal,
+  }
+
+  /// A diagnostic message associated with a file.
+  /// Messages can be accumulated during parsing, transformation, and compilation.
+  record message {
+    /// Human-readable message text
+    text: string,
+    /// Severity level of the message
+    severity: message-severity,
+    /// Optional position in the source file
+    position: option<position>,
+    /// Optional rule or plugin identifier that generated this message
+    source: option<string>,
+    /// Optional URL to documentation about this message
+    url: option<string>,
+  }
+
+  /// Metadata is represented as JSON-encoded string for flexibility.
+  /// This allows arbitrary metadata structures while maintaining type safety
+  /// at the WIT boundary. Components can parse this according to their needs.
+  ///
+  /// Future iterations may provide structured metadata types.
+  type metadata = string;
+
+  /// Flexible data representation for extensible node properties.
+  /// Uses JSON encoding to support arbitrary data structures while
+  /// maintaining compatibility across language boundaries.
+  ///
+  /// Examples:
+  /// - `"string value"` for simple strings
+  /// - `"42"` for numbers
+  /// - `"true"` for booleans
+  /// - `"[1, 2, 3]"` for arrays
+  /// - `"{\"key\": \"value\"}"` for objects
+  type json-value = string;
+}

@@ -1,0 +1,115 @@
+package ndoctrinate:pipeline@0.1.0;
+
+/// Main pipeline world definition.
+/// Defines the complete ecosystem for the ndoctrinate document processing pipeline.
+
+/// World for the complete pipeline host.
+/// This represents the TypeScript/Bun runtime that orchestrates WASM components.
+world pipeline-host {
+  /// Import parser components
+  import ndoctrinate:components/parser;
+
+  /// Import transformer components
+  import ndoctrinate:components/transformer;
+
+  /// Import compiler components
+  import ndoctrinate:components/compiler;
+
+  /// Export host capabilities that components can use
+  export host-capabilities;
+}
+
+/// Host capabilities provided to WASM components.
+/// These are services that the host runtime (TypeScript/Bun) provides.
+interface host-capabilities {
+  use ndoctrinate:types/common.{message, message-severity};
+
+  /// Log a message from a component.
+  /// Allows components to send diagnostic information to the host.
+  ///
+  /// # Parameters
+  /// - `level`: Log level (maps to message-severity)
+  /// - `message`: Log message text
+  /// - `source`: Optional identifier of the component logging
+  log: func(level: message-severity, message: string, source: option<string>);
+
+  /// Get the current working directory from the host.
+  get-cwd: func() -> string;
+
+  /// Resolve a relative path against the current working directory.
+  ///
+  /// # Parameters
+  /// - `path`: Relative or absolute path
+  ///
+  /// # Returns
+  /// - Resolved absolute path
+  resolve-path: func(path: string) -> string;
+
+  /// Get an environment variable.
+  /// Allows components to access configuration from the environment.
+  ///
+  /// # Parameters
+  /// - `name`: Environment variable name
+  ///
+  /// # Returns
+  /// - `Ok(value)`: Environment variable value
+  /// - `Err(())`: Environment variable not found
+  get-env: func(name: string) -> option<string>;
+}
+
+/// World for a complete pipeline component.
+/// A component that implements all three interfaces (parse, transform, compile).
+/// This is useful for format-specific processors that handle the full cycle.
+world pipeline-all-in-one {
+  /// Export parser interface
+  export ndoctrinate:components/parser;
+
+  /// Export transformer interface
+  export ndoctrinate:components/transformer;
+
+  /// Export compiler interface
+  export ndoctrinate:components/compiler;
+
+  /// Import host capabilities
+  import host-capabilities;
+}
+
+/// World for parser-only component.
+world pipeline-parser {
+  /// Export parser interface
+  export ndoctrinate:components/parser;
+
+  /// Import host capabilities
+  import host-capabilities;
+}
+
+/// World for transformer-only component.
+world pipeline-transformer {
+  /// Export transformer interface
+  export ndoctrinate:components/transformer;
+
+  /// Import host capabilities
+  import host-capabilities;
+}
+
+/// World for compiler-only component.
+world pipeline-compiler {
+  /// Export compiler interface
+  export ndoctrinate:components/compiler;
+
+  /// Import host capabilities
+  import host-capabilities;
+}
+
+/// World for parser+compiler combo (no transformation).
+/// Useful for simple format conversions.
+world pipeline-converter {
+  /// Export parser interface
+  export ndoctrinate:components/parser;
+
+  /// Export compiler interface
+  export ndoctrinate:components/compiler;
+
+  /// Import host capabilities
+  import host-capabilities;
+}

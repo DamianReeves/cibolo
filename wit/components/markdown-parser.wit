@@ -1,0 +1,188 @@
+package ndoctrinate:components@0.1.0;
+
+/// Example: Markdown Parser Component
+///
+/// This file demonstrates how to create a concrete parser implementation
+/// for a specific format (Markdown). It can serve as a template for
+/// implementing parsers in different languages (MoonBit, Gleam, etc.).
+
+/// Markdown-specific AST node types.
+/// These extend the base unist node types with Markdown-specific structures.
+interface markdown-types {
+  use ndoctrinate:types/ast.{node-data, children};
+
+  /// Heading node (h1-h6)
+  record heading {
+    data: node-data,
+    /// Heading depth (1-6)
+    depth: u32,
+    children: children,
+  }
+
+  /// Paragraph node
+  record paragraph {
+    data: node-data,
+    children: children,
+  }
+
+  /// Link node
+  record link {
+    data: node-data,
+    /// URL/href
+    url: string,
+    /// Optional title attribute
+    title: option<string>,
+    children: children,
+  }
+
+  /// Image node
+  record image {
+    data: node-data,
+    /// Image URL/src
+    url: string,
+    /// Alt text
+    alt: string,
+    /// Optional title attribute
+    title: option<string>,
+  }
+
+  /// Code block
+  record code {
+    data: node-data,
+    /// Code content
+    value: string,
+    /// Optional language identifier
+    lang: option<string>,
+    /// Optional metadata string (used by some Markdown flavors)
+    meta: option<string>,
+  }
+
+  /// Inline code
+  record inline-code {
+    data: node-data,
+    value: string,
+  }
+
+  /// Blockquote
+  record blockquote {
+    data: node-data,
+    children: children,
+  }
+
+  /// List (ordered or unordered)
+  record list {
+    data: node-data,
+    /// Whether the list is ordered
+    ordered: bool,
+    /// Starting number for ordered lists
+    start: option<u32>,
+    /// Whether list items contain loose (paragraph-wrapped) content
+    spread: bool,
+    children: children,
+  }
+
+  /// List item
+  record list-item {
+    data: node-data,
+    /// Whether this item is checked (for task lists)
+    checked: option<bool>,
+    /// Whether the item contains loose content
+    spread: bool,
+    children: children,
+  }
+
+  /// Horizontal rule / thematic break
+  record thematic-break {
+    data: node-data,
+  }
+
+  /// HTML block
+  record html {
+    data: node-data,
+    value: string,
+  }
+
+  /// Strong/bold emphasis
+  record strong {
+    data: node-data,
+    children: children,
+  }
+
+  /// Emphasis/italic
+  record emphasis {
+    data: node-data,
+    children: children,
+  }
+
+  /// Strikethrough (GFM extension)
+  record delete {
+    data: node-data,
+    children: children,
+  }
+
+  /// Table (GFM extension)
+  record table {
+    data: node-data,
+    /// Column alignments
+    align: list<table-align>,
+    children: children,
+  }
+
+  /// Table alignment options
+  enum table-align {
+    left,
+    right,
+    center,
+    none,
+  }
+
+  /// Table row
+  record table-row {
+    data: node-data,
+    children: children,
+  }
+
+  /// Table cell
+  record table-cell {
+    data: node-data,
+    children: children,
+  }
+}
+
+/// Markdown parser configuration options.
+interface markdown-config {
+  /// Markdown parsing options
+  record markdown-options {
+    /// Enable GitHub Flavored Markdown (GFM) extensions
+    gfm: bool,
+    /// Enable parsing of YAML frontmatter
+    frontmatter: bool,
+    /// Enable math support (e.g., KaTeX)
+    math: bool,
+    /// Enable footnotes
+    footnotes: bool,
+    /// Enable definition lists
+    definition-lists: bool,
+    /// Pedantic mode (strict CommonMark)
+    pedantic: bool,
+  }
+
+  /// Get default Markdown options
+  default-options: func() -> markdown-options;
+}
+
+/// World for a Markdown parser component.
+/// This demonstrates a concrete implementation using the pipeline-parser world.
+world markdown-parser-component {
+  /// Export the standard parser interface
+  export ndoctrinate:components/parser;
+
+  /// Export Markdown-specific configuration
+  export markdown-config;
+
+  /// Import host capabilities
+  import ndoctrinate:pipeline/host-capabilities;
+
+  /// Export Markdown-specific types (for advanced usage)
+  export markdown-types;
+}

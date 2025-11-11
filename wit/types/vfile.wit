@@ -1,0 +1,86 @@
+package ndoctrinate:types@0.1.0;
+
+/// Virtual file representation following the VFile specification.
+/// See: https://github.com/vfile/vfile
+interface vfile {
+  use common.{message, metadata};
+
+  /// Represents the content of a file.
+  /// Can be either text or binary data.
+  variant file-content {
+    /// Text content (UTF-8 string)
+    text(string),
+    /// Binary content
+    binary(list<u8>),
+  }
+
+  /// History entry tracking the path of a file through transformations.
+  /// VFiles can track their path history as they move through the pipeline.
+  record history-entry {
+    /// Previous path
+    path: string,
+    /// Optional base directory for this path
+    base: option<string>,
+  }
+
+  /// Virtual file representation.
+  /// VFile is the container that flows through the entire pipeline,
+  /// carrying content, metadata, and accumulated messages.
+  record virtual-file {
+    /// File path (can be relative or absolute)
+    /// Example: "document.md" or "/path/to/document.md"
+    path: option<string>,
+
+    /// Base directory for resolving relative paths
+    /// Example: "/path/to" for path "document.md"
+    base: option<string>,
+
+    /// Working directory (current directory context)
+    cwd: option<string>,
+
+    /// File content (text or binary)
+    content: file-content,
+
+    /// Custom metadata attached to this file
+    /// JSON-encoded for flexibility
+    /// Example: `"{\"matter\": {\"title\": \"Document Title\"}, \"custom\": true}"`
+    data: option<metadata>,
+
+    /// Messages accumulated during processing
+    /// Includes warnings, errors, and informational messages
+    messages: list<message>,
+
+    /// History of path changes
+    /// Tracks how the file path evolved through transformations
+    history: list<history-entry>,
+
+    /// Whether the file was modified
+    /// Can be used to track if transformations changed the content
+    modified: bool,
+
+    /// Source map or other debugging information (optional)
+    /// JSON-encoded for flexibility
+    source-map: option<string>,
+  }
+
+  /// Create a new virtual file with text content
+  new-text-file: func(path: option<string>, content: string) -> virtual-file;
+
+  /// Create a new virtual file with binary content
+  new-binary-file: func(path: option<string>, content: list<u8>) -> virtual-file;
+
+  /// Add a message to a virtual file
+  add-message: func(file: virtual-file, msg: message) -> virtual-file;
+
+  /// Get the content as text (fails if content is binary)
+  get-text-content: func(file: virtual-file) -> result<string, string>;
+
+  /// Get the content as binary
+  get-binary-content: func(file: virtual-file) -> list<u8>;
+
+  /// Clone a virtual file with new content
+  with-content: func(file: virtual-file, content: file-content) -> virtual-file;
+
+  /// Set metadata on a virtual file
+  with-metadata: func(file: virtual-file, data: metadata) -> virtual-file;
+}

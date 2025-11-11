@@ -1,0 +1,69 @@
+package ndoctrinate:types@0.1.0;
+
+/// Error types for pipeline operations.
+/// Uses algebraic data types (variants) to represent different error categories.
+interface errors {
+  use common.{position};
+
+  /// Details about what caused an error.
+  /// Can include nested error information for debugging.
+  record error-cause {
+    /// Description of the underlying cause
+    message: string,
+    /// Stack trace or additional context (optional)
+    trace: option<string>,
+  }
+
+  /// Error that occurs during the parsing phase.
+  /// Represents failures to convert input into an AST.
+  record parse-error {
+    /// Human-readable error message
+    message: string,
+    /// Optional position in the source where the error occurred
+    position: option<position>,
+    /// Optional underlying cause
+    cause: option<error-cause>,
+    /// Optional error code for programmatic handling
+    code: option<string>,
+  }
+
+  /// Error that occurs during the transformation phase.
+  /// Represents failures to transform an AST.
+  record transform-error {
+    /// Human-readable error message
+    message: string,
+    /// Optional path in the AST where the error occurred
+    /// (e.g., "root.children[3].properties.id")
+    node-path: option<string>,
+    /// Optional underlying cause
+    cause: option<error-cause>,
+    /// Optional identifier of the transformer that failed
+    transformer-id: option<string>,
+    /// Optional error code for programmatic handling
+    code: option<string>,
+  }
+
+  /// Error that occurs during the compilation phase.
+  /// Represents failures to convert an AST to output format.
+  record compile-error {
+    /// Human-readable error message
+    message: string,
+    /// Optional path in the AST where compilation failed
+    node-path: option<string>,
+    /// Optional underlying cause
+    cause: option<error-cause>,
+    /// Optional error code for programmatic handling
+    code: option<string>,
+  }
+
+  /// Union of all possible pipeline errors.
+  /// Uses variant type to maintain type safety while allowing different error types.
+  variant pipeline-error {
+    /// Error during parsing
+    parse(parse-error),
+    /// Error during transformation
+    transform(transform-error),
+    /// Error during compilation
+    compile(compile-error),
+  }
+}

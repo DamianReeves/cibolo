@@ -1,0 +1,83 @@
+package ndoctrinate:components@0.1.0;
+
+/// Compiler component interface.
+/// Compilers convert an Abstract Syntax Tree (AST) into output format (text or binary).
+interface compiler {
+  use ndoctrinate:types/vfile.{virtual-file, file-content};
+  use ndoctrinate:types/ast.{syntax-tree};
+  use ndoctrinate:types/errors.{compile-error};
+
+  /// Compile a syntax tree into output format.
+  ///
+  /// Takes a syntax tree and virtual file, generates output content,
+  /// and returns the result as a virtual file.
+  ///
+  /// # Parameters
+  /// - `tree`: The syntax tree to compile
+  /// - `file`: Virtual file for context and message accumulation
+  ///
+  /// # Returns
+  /// - `Ok(compile-result)`: Successfully compiled output
+  /// - `Err(compile-error)`: Compilation failed with error details
+  ///
+  /// # Notes
+  /// - The output format (text vs binary) depends on the compiler type
+  /// - Compilers may add messages to the file for warnings/info
+  /// - The returned file contains the compiled content
+  /// - Compilers should be pure and not have side effects
+  compile: func(tree: syntax-tree, file: virtual-file) -> result<compile-result, compile-error>;
+
+  /// Result of a successful compile operation.
+  record compile-result {
+    /// The virtual file with compiled content
+    /// The file.content field contains the output
+    file: virtual-file,
+  }
+
+  /// Get information about this compiler.
+  /// Returns metadata about the compiler's capabilities and configuration.
+  get-info: func() -> compiler-info;
+
+  /// Compiler metadata and capabilities.
+  record compiler-info {
+    /// Compiler name/identifier (e.g., "html-compiler", "docx-compiler")
+    name: string,
+    /// Human-readable description
+    description: string,
+    /// Version of the compiler
+    version: string,
+    /// Output format/MIME type
+    /// Example: "text/html", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    output-format: string,
+    /// Whether output is text or binary
+    output-is-binary: bool,
+    /// Optional configuration schema (JSON Schema as string)
+    config-schema: option<string>,
+  }
+
+  /// Configure the compiler with options.
+  /// Allows runtime configuration of compiler behavior.
+  ///
+  /// # Parameters
+  /// - `config`: JSON-encoded configuration object
+  ///
+  /// # Returns
+  /// - `Ok(())`: Configuration applied successfully
+  /// - `Err(string)`: Configuration error message
+  ///
+  /// # Examples
+  /// - HTML compiler: `{"pretty": true, "minify": false}`
+  /// - PDF compiler: `{"pageSize": "A4", "margins": {"top": 20}}`
+  ///
+  /// # Notes
+  /// - Configuration format is compiler-specific
+  /// - Refer to `compiler-info.config-schema` for expected structure
+  configure: func(config: string) -> result<_, string>;
+}
+
+/// World for compiler components.
+/// Defines what a compiler component exports to the host.
+world compiler-component {
+  /// Export the compiler interface
+  export compiler;
+}

@@ -1,0 +1,81 @@
+package ndoctrinate:components@0.1.0;
+
+/// Transformer component interface.
+/// Transformers modify an Abstract Syntax Tree (AST) and return a new/modified tree.
+interface transformer {
+  use ndoctrinate:types/vfile.{virtual-file};
+  use ndoctrinate:types/ast.{syntax-tree};
+  use ndoctrinate:types/errors.{transform-error};
+
+  /// Transform a syntax tree.
+  ///
+  /// Takes a syntax tree and virtual file, applies transformations,
+  /// and returns a modified tree and file.
+  ///
+  /// # Parameters
+  /// - `tree`: The input syntax tree to transform
+  /// - `file`: Virtual file for context and message accumulation
+  ///
+  /// # Returns
+  /// - `Ok(transform-result)`: Successfully transformed tree and updated file
+  /// - `Err(transform-error)`: Transformation failed with error details
+  ///
+  /// # Notes
+  /// - Transformers should not mutate the input tree (immutable transformations)
+  /// - Multiple transformers can be chained together
+  /// - Transformers may add messages to the file for warnings/info
+  /// - Transformers should be pure and not have side effects
+  transform: func(tree: syntax-tree, file: virtual-file) -> result<transform-result, transform-error>;
+
+  /// Result of a successful transform operation.
+  record transform-result {
+    /// The transformed syntax tree
+    tree: syntax-tree,
+    /// The virtual file (may include added messages or updated metadata)
+    file: virtual-file,
+  }
+
+  /// Get information about this transformer.
+  /// Returns metadata about the transformer's capabilities and configuration.
+  get-info: func() -> transformer-info;
+
+  /// Transformer metadata and capabilities.
+  record transformer-info {
+    /// Transformer name/identifier (e.g., "heading-id-injector", "link-rewriter")
+    name: string,
+    /// Human-readable description
+    description: string,
+    /// Version of the transformer
+    version: string,
+    /// Node types this transformer operates on (empty list means all types)
+    /// Example: ["heading", "link", "image"]
+    target-node-types: list<string>,
+    /// Whether this transformer modifies the tree structure (adds/removes nodes)
+    /// or only modifies node properties
+    modifies-structure: bool,
+    /// Optional configuration schema (JSON Schema as string)
+    config-schema: option<string>,
+  }
+
+  /// Configure the transformer with options.
+  /// Allows runtime configuration of transformer behavior.
+  ///
+  /// # Parameters
+  /// - `config`: JSON-encoded configuration object
+  ///
+  /// # Returns
+  /// - `Ok(())`: Configuration applied successfully
+  /// - `Err(string)`: Configuration error message
+  ///
+  /// # Notes
+  /// - Configuration format is transformer-specific
+  /// - Refer to `transformer-info.config-schema` for expected structure
+  configure: func(config: string) -> result<_, string>;
+}
+
+/// World for transformer components.
+/// Defines what a transformer component exports to the host.
+world transformer-component {
+  /// Export the transformer interface
+  export transformer;
+}

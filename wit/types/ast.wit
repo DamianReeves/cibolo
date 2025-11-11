@@ -1,0 +1,129 @@
+package ndoctrinate:types@0.1.0;
+
+/// Abstract Syntax Tree (AST) types following the unist specification.
+/// See: https://github.com/syntax-tree/unist
+interface ast {
+  use common.{position, json-value};
+
+  /// Properties that can be attached to any node.
+  /// Uses JSON encoding for flexibility while maintaining type safety at boundaries.
+  record node-properties {
+    /// JSON-encoded properties object
+    /// Example: `"{\"id\": \"heading-1\", \"className\": [\"intro\"]}"`
+    data: json-value,
+  }
+
+  /// Base node structure following unist specification.
+  /// All AST nodes share these common fields.
+  record node-data {
+    /// Node type identifier (e.g., "root", "paragraph", "text", "heading")
+    node-type: string,
+    /// Optional position in source file
+    position: option<position>,
+    /// Optional additional properties
+    properties: option<node-properties>,
+  }
+
+  /// Text content for literal nodes.
+  /// Used by leaf nodes that contain actual text.
+  record text-content {
+    /// The text value
+    value: string,
+  }
+
+  /// Reference to child nodes by their identifiers.
+  /// Used by parent nodes to maintain tree structure.
+  type node-id = u32;
+
+  /// List of child node identifiers.
+  /// Parents store references to children rather than nested structures
+  /// to simplify serialization and avoid deep recursion.
+  record children {
+    /// List of child node IDs
+    ids: list<node-id>,
+  }
+
+  /// Complete node representation with all possible node types.
+  /// Uses a hybrid approach:
+  /// - Structured types for common nodes (root, text, parent)
+  /// - Flexible JSON representation for extensibility
+  variant node {
+    /// Root node - top of the syntax tree
+    /// Must be a parent node (has children)
+    root(node-root),
+
+    /// Text node - contains literal text
+    /// Always a leaf node (no children)
+    text(node-text),
+
+    /// Generic parent node - has children but no text value
+    /// Used for structural nodes (paragraph, heading, list, etc.)
+    parent(node-parent),
+
+    /// Literal node - contains text but may also have properties
+    /// Similar to text but can have additional metadata
+    literal(node-literal),
+
+    /// Generic extensible node for format-specific types
+    /// Allows formats to define custom node types using JSON
+    /// Example: `"{\"type\": \"yaml-frontmatter\", \"value\": \"...\"}"`
+    generic(node-generic),
+  }
+
+  /// Root node - the top-level node of a syntax tree.
+  /// Always has type "root" and must have children.
+  record node-root {
+    /// Common node data (type is always "root")
+    data: node-data,
+    /// Child nodes
+    children: children,
+  }
+
+  /// Text node - contains literal text content.
+  /// Always has type "text" and contains a string value.
+  record node-text {
+    /// Common node data (type is always "text")
+    data: node-data,
+    /// Text content
+    content: text-content,
+  }
+
+  /// Parent node - has children but no direct text value.
+  /// Used for structural elements like paragraphs, headings, lists, etc.
+  record node-parent {
+    /// Common node data (type varies: "paragraph", "heading", "list", etc.)
+    data: node-data,
+    /// Child nodes
+    children: children,
+  }
+
+  /// Literal node - similar to text but can have additional metadata.
+  /// Used for nodes that have both text content and properties.
+  record node-literal {
+    /// Common node data
+    data: node-data,
+    /// Text content
+    content: text-content,
+  }
+
+  /// Generic node - fully flexible JSON representation.
+  /// Used for format-specific node types that don't fit the standard categories.
+  /// The JSON structure should follow unist conventions.
+  record node-generic {
+    /// JSON-encoded complete node structure
+    /// Must include at least: `{"type": "node-type-name"}`
+    /// May include: position, children, value, properties, etc.
+    data: json-value,
+  }
+
+  /// A complete syntax tree with indexed nodes.
+  /// Uses a flat structure with node IDs to simplify serialization
+  /// and enable efficient tree traversal in WASM components.
+  record syntax-tree {
+    /// The root node ID (entry point to the tree)
+    root-id: node-id,
+    /// Map of node ID to node (represented as list of tuples for WIT compatibility)
+    /// In practice, this would be serialized as JSON or a custom binary format
+    nodes: list<tuple<node-id, node>>,
+  }
+}
