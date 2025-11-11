@@ -1,0 +1,30 @@
+{
+  "name": "ndoctrinate-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "bun test",
+    "format": "bunx prettier --write \"src/**/*.{ts,tsx,json,css}\"",
+    "lint": "bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\" --fix",
+    "verify": "bun run --bun tsc --noEmit && bunx prettier --check \"src/**/*.{ts,tsx,json,css}\" && bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\"",
+    "check": "bun run ../../../scripts/check.ts verify test",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "effect": "^3.0.0",
+    "ndoctrinate-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "ndoctrinate-backend",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/typescript/backend/src",
+  "projectType": "application",
+  "tags": ["type:application", "scope:backend"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun build src/index.ts --outdir dist --target bun",
+        "cwd": "projects/typescript/backend"
+      },
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run --watch src/index.ts",
+        "cwd": "projects/typescript/backend"
+      }
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run dist/index.js",
+        "cwd": "projects/typescript/backend"
+      },
+      "dependsOn": ["build"]
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf dist",
+        "cwd": "projects/typescript/backend"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun test",
+        "cwd": "projects/typescript/backend"
+      }
+    },
+    "verify": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "bun run --bun tsc --noEmit",
+          "bunx prettier --check \"src/**/*.{ts,tsx,json}\"",
+          "bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\""
+        ],
+        "cwd": "projects/typescript/backend",
+        "parallel": false
+      },
+      "dependsOn": ["^build"]
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run ../../../scripts/check.ts verify test",
+        "cwd": "projects/typescript/backend"
+      },
+      "dependsOn": ["verify", "test"]
+    }
+  }
+}

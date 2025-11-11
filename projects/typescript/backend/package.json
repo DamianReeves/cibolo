@@ -1,0 +1,29 @@
+{
+  "name": "ndoctrinate-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "start": "bun run dist/index.js",
+    "test": "bun test",
+    "format": "bunx prettier --write \"src/**/*.{ts,tsx,json}\"",
+    "lint": "bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\" --fix",
+    "verify": "bun run --bun tsc --noEmit && bunx prettier --check \"src/**/*.{ts,tsx,json}\" && bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\"",
+    "check": "bun run ../../../scripts/check.ts verify test",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "elysia": "^1.1.0",
+    "@elysiajs/swagger": "^1.1.0",
+    "@elysiajs/cors": "^1.1.0",
+    "effect": "^3.0.0",
+    "ndoctrinate-core": "workspace:*",
+    "ndoctrinate-tools": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.0.0"
+  }
+}
