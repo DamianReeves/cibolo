@@ -5,12 +5,33 @@
   "projectType": "library",
   "tags": ["type:wit", "scope:wasm", "scope:components"],
   "targets": {
+    "sync-deps": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "mkdir -p deps/types deps/components",
+          "cp types/*.wit deps/types/",
+          "cp components/*.wit deps/components/"
+        ],
+        "cwd": "wit",
+        "parallel": false
+      },
+      "cache": false
+    },
+    "clean-deps": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf deps",
+        "cwd": "wit"
+      }
+    },
     "validate": {
       "executor": "nx:run-commands",
       "options": {
         "command": "wasm-tools component wit . --all-features",
         "cwd": "wit"
       },
+      "dependsOn": ["sync-deps"],
       "cache": true
     },
     "lint": {
@@ -43,6 +64,7 @@
         "cwd": "wit",
         "parallel": false
       },
+      "dependsOn": ["sync-deps"],
       "cache": true
     },
     "check": {
@@ -51,7 +73,7 @@
         "command": "wasm-tools component wit . --all-features",
         "cwd": "wit"
       },
-      "dependsOn": ["verify"],
+      "dependsOn": ["sync-deps", "verify"],
       "cache": true
     },
     "doc": {

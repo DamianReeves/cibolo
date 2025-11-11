@@ -33,4 +33,7 @@ main.js
 styles.js
 environment.js
 styles.css
-favicon.ico/wit/deps/
+favicon.ico
+
+# WASM Component Model deps (build artifacts)
+/wit/deps/
