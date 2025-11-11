@@ -1,9 +1,11 @@
+package ndoctrinate:components@0.1.0;
+
 /// Parser component interface.
 /// Parsers convert input (text or binary) into an Abstract Syntax Tree (AST).
 interface parser {
-  use vfile.{virtual-file};
-  use ast.{syntax-tree};
-  use errors.{parse-error};
+  use ndoctrinate:types/vfile@0.1.0.{virtual-file};
+  use ndoctrinate:types/ast@0.1.0.{syntax-tree};
+  use ndoctrinate:types/errors@0.1.0.{parse-error};
 
   /// Parse input into a syntax tree.
   ///

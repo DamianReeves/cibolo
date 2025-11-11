@@ -1,9 +1,11 @@
+package ndoctrinate:components@0.1.0;
+
 /// Compiler component interface.
 /// Compilers convert an Abstract Syntax Tree (AST) into output format (text or binary).
 interface compiler {
-  use vfile.{virtual-file, file-content};
-  use ast.{syntax-tree};
-  use errors.{compile-error};
+  use ndoctrinate:types/vfile@0.1.0.{virtual-file, file-content};
+  use ndoctrinate:types/ast@0.1.0.{syntax-tree};
+  use ndoctrinate:types/errors@0.1.0.{compile-error};
 
   /// Compile a syntax tree into output format.
   ///

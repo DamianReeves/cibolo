@@ -6,7 +6,8 @@
   "workspaces": [
     "apps/typescript/*",
     "apps/typescript/examples/*",
-    "libs/typescript/*"
+    "libs/typescript/*",
+    "wit"
   ],
   "private": true,
   "scripts": {

@@ -7,13 +7,13 @@ package ndoctrinate:pipeline@0.1.0;
 /// This represents the TypeScript/Bun runtime that orchestrates WASM components.
 world pipeline-host {
   /// Import parser components
-  import parser;
+  import ndoctrinate:components/parser@0.1.0;
 
   /// Import transformer components
-  import transformer;
+  import ndoctrinate:components/transformer@0.1.0;
 
   /// Import compiler components
-  import compiler;
+  import ndoctrinate:components/compiler@0.1.0;
 
   /// Export host capabilities that components can use
   export host-capabilities;
@@ -22,7 +22,7 @@ world pipeline-host {
 /// Host capabilities provided to WASM components.
 /// These are services that the host runtime (TypeScript/Bun) provides.
 interface host-capabilities {
-  use common.{message, message-severity};
+  use ndoctrinate:types/common@0.1.0.{message, message-severity};
 
   /// Log a message from a component.
   /// Allows components to send diagnostic information to the host.
@@ -62,13 +62,13 @@ interface host-capabilities {
 /// This is useful for format-specific processors that handle the full cycle.
 world pipeline-all-in-one {
   /// Export parser interface
-  export parser;
+  export ndoctrinate:components/parser@0.1.0;
 
   /// Export transformer interface
-  export transformer;
+  export ndoctrinate:components/transformer@0.1.0;
 
   /// Export compiler interface
-  export compiler;
+  export ndoctrinate:components/compiler@0.1.0;
 
   /// Import host capabilities
   import host-capabilities;
@@ -77,7 +77,7 @@ world pipeline-all-in-one {
 /// World for parser-only component.
 world pipeline-parser {
   /// Export parser interface
-  export parser;
+  export ndoctrinate:components/parser@0.1.0;
 
   /// Import host capabilities
   import host-capabilities;
@@ -86,7 +86,7 @@ world pipeline-parser {
 /// World for transformer-only component.
 world pipeline-transformer {
   /// Export transformer interface
-  export transformer;
+  export ndoctrinate:components/transformer@0.1.0;
 
   /// Import host capabilities
   import host-capabilities;
@@ -95,7 +95,7 @@ world pipeline-transformer {
 /// World for compiler-only component.
 world pipeline-compiler {
   /// Export compiler interface
-  export compiler;
+  export ndoctrinate:components/compiler@0.1.0;
 
   /// Import host capabilities
   import host-capabilities;
@@ -105,10 +105,10 @@ world pipeline-compiler {
 /// Useful for simple format conversions.
 world pipeline-converter {
   /// Export parser interface
-  export parser;
+  export ndoctrinate:components/parser@0.1.0;
 
   /// Export compiler interface
-  export compiler;
+  export ndoctrinate:components/compiler@0.1.0;
 
   /// Import host capabilities
   import host-capabilities;
