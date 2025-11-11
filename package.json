@@ -4,14 +4,15 @@
   "description": "A pluggable document translation tool built using WebAssembly (WASM) and the WASM Component Model",
   "type": "module",
   "workspaces": [
-    "projects/typescript/*",
-    "projects/typescript/examples/*"
+    "apps/typescript/*",
+    "apps/typescript/examples/*",
+    "libs/typescript/*"
   ],
   "private": true,
   "scripts": {
     "setup": "make setup",
     "cli": "nx run ndoctrinate:dev",
-    "ndoctrinate": "./projects/typescript/cli/dist/ndoctrinate",
+    "ndoctrinate": "./apps/typescript/cli/dist/ndoctrinate",
     "example:simple-pipeline": "nx run simple-pipeline-example:start"
   },
   "devDependencies": {

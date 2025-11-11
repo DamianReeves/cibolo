@@ -14,7 +14,7 @@
         "prettier": "^3.2.5",
       },
     },
-    "projects/typescript/backend": {
+    "apps/typescript/backend": {
       "name": "ndoctrinate-backend",
       "version": "0.1.0",
       "dependencies": {
@@ -30,7 +30,7 @@
         "typescript": "^5.0.0",
       },
     },
-    "projects/typescript/cli": {
+    "apps/typescript/cli": {
       "name": "ndoctrinate",
       "version": "0.1.0",
       "bin": {
@@ -55,7 +55,7 @@
         "typescript": "^5.3.0",
       },
     },
-    "projects/typescript/client": {
+    "apps/typescript/client": {
       "name": "ndoctrinate-client",
       "version": "0.1.0",
       "dependencies": {
@@ -72,7 +72,15 @@
         "vite": "^5.0.0",
       },
     },
-    "projects/typescript/core": {
+    "apps/typescript/examples/simple-pipeline": {
+      "name": "simple-pipeline-example",
+      "version": "0.1.0",
+      "dependencies": {
+        "effect": "^3.0.0",
+        "ndoctrinate-core": "workspace:*",
+      },
+    },
+    "libs/typescript/core": {
       "name": "ndoctrinate-core",
       "version": "0.1.0",
       "dependencies": {
@@ -91,15 +99,7 @@
         "typescript": "^5.3.0",
       },
     },
-    "projects/typescript/examples/simple-pipeline": {
-      "name": "simple-pipeline-example",
-      "version": "0.1.0",
-      "dependencies": {
-        "effect": "^3.0.0",
-        "ndoctrinate-core": "workspace:*",
-      },
-    },
-    "projects/typescript/tools": {
+    "libs/typescript/tools": {
       "name": "ndoctrinate-tools",
       "version": "0.1.0",
       "dependencies": {
@@ -936,15 +936,15 @@
 
     "natural-compare": ["natural-compare@1.4.0", "", {}, "sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw=="],
 
-    "ndoctrinate": ["ndoctrinate@workspace:projects/typescript/cli"],
+    "ndoctrinate": ["ndoctrinate@workspace:apps/typescript/cli"],
 
-    "ndoctrinate-backend": ["ndoctrinate-backend@workspace:projects/typescript/backend"],
+    "ndoctrinate-backend": ["ndoctrinate-backend@workspace:apps/typescript/backend"],
 
-    "ndoctrinate-client": ["ndoctrinate-client@workspace:projects/typescript/client"],
+    "ndoctrinate-client": ["ndoctrinate-client@workspace:apps/typescript/client"],
 
-    "ndoctrinate-core": ["ndoctrinate-core@workspace:projects/typescript/core"],
+    "ndoctrinate-core": ["ndoctrinate-core@workspace:libs/typescript/core"],
 
-    "ndoctrinate-tools": ["ndoctrinate-tools@workspace:projects/typescript/tools"],
+    "ndoctrinate-tools": ["ndoctrinate-tools@workspace:libs/typescript/tools"],
 
     "node-machine-id": ["node-machine-id@1.1.12", "", {}, "sha512-QNABxbrPa3qEIfrE6GOJ7BYIuignnJw7iQ2YPbc3Nla1HzRJjXzZOiikfF8m7eAMfichLt3M4VgLOetqgDmgGQ=="],
 
@@ -1056,7 +1056,7 @@
 
     "signal-exit": ["signal-exit@3.0.7", "", {}, "sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ=="],
 
-    "simple-pipeline-example": ["simple-pipeline-example@workspace:projects/typescript/examples/simple-pipeline"],
+    "simple-pipeline-example": ["simple-pipeline-example@workspace:apps/typescript/examples/simple-pipeline"],
 
     "slash": ["slash@3.0.0", "", {}, "sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q=="],
 

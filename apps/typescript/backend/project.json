@@ -1,15 +1,15 @@
 {
-  "name": "ndoctrinate",
+  "name": "ndoctrinate-backend",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "projects/typescript/cli/src",
+  "sourceRoot": "apps/typescript/backend/src",
   "projectType": "application",
-  "tags": ["type:application", "scope:cli"],
+  "tags": ["type:application", "scope:backend"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bun run build.ts",
-        "cwd": "projects/typescript/cli"
+        "command": "bun build src/index.ts --outdir dist --target bun",
+        "cwd": "apps/typescript/backend"
       },
       "dependsOn": ["^build"],
       "outputs": ["{projectRoot}/dist"]
@@ -17,22 +17,30 @@
     "dev": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bun run src/index.ts",
-        "cwd": "projects/typescript/cli"
+        "command": "bun run --watch src/index.ts",
+        "cwd": "apps/typescript/backend"
       }
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run dist/index.js",
+        "cwd": "apps/typescript/backend"
+      },
+      "dependsOn": ["build"]
     },
     "clean": {
       "executor": "nx:run-commands",
       "options": {
         "command": "rm -rf dist",
-        "cwd": "projects/typescript/cli"
+        "cwd": "apps/typescript/backend"
       }
     },
     "test": {
       "executor": "nx:run-commands",
       "options": {
         "command": "bun test",
-        "cwd": "projects/typescript/cli"
+        "cwd": "apps/typescript/backend"
       }
     },
     "verify": {
@@ -43,7 +51,7 @@
           "bunx prettier --check \"src/**/*.{ts,tsx,json}\"",
           "bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\""
         ],
-        "cwd": "projects/typescript/cli",
+        "cwd": "apps/typescript/backend",
         "parallel": false
       },
       "dependsOn": ["^build"]
@@ -52,7 +60,7 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "bun run ../../../scripts/check.ts verify test",
-        "cwd": "projects/typescript/cli"
+        "cwd": "apps/typescript/backend"
       },
       "dependsOn": ["verify", "test"]
     }
