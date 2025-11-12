@@ -1,0 +1,39 @@
+{
+  "name": "ndoctrinate-nbformat",
+  "version": "0.1.0",
+  "description": "Jupyter notebook format (nbformat) as unist-compatible syntax tree",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "bun test",
+    "format": "bunx prettier --write \"src/**/*.{ts,tsx,json}\"",
+    "lint": "bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\" --fix",
+    "verify": "bun run --bun tsc --noEmit && bunx prettier --check \"src/**/*.{ts,tsx,json}\" && bunx eslint --config ../../../.eslintrc.json \"src/**/*.{ts,tsx}\"",
+    "check": "bun run ../../../scripts/check.ts verify test"
+  },
+  "dependencies": {
+    "@jupyterlab/nbformat": "^4.2.5",
+    "ndoctrinate-core": "workspace:*",
+    "effect": "^3.0.0",
+    "vfile": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/unist": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "jupyter",
+    "notebook",
+    "nbformat",
+    "ast",
+    "syntax-tree",
+    "unist",
+    "unified"
+  ]
+}

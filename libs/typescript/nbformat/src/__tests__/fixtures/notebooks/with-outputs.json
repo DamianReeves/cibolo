@@ -1,0 +1,61 @@
+{
+  "cells": [
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "id": "calc-cell",
+      "metadata": {},
+      "outputs": [
+        {
+          "execution_count": 1,
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": "42"
+          },
+          "metadata": {}
+        }
+      ],
+      "source": "21 + 21"
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "id": "plot-cell",
+      "metadata": {},
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": "<Figure size 640x480>",
+            "image/png": "iVBORw0KGgoAAAANSUhEUgAA..."
+          },
+          "metadata": {}
+        }
+      ],
+      "source": "import matplotlib.pyplot as plt\nplt.plot([1, 2, 3])\nplt.show()"
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "id": "error-cell",
+      "metadata": {},
+      "outputs": [
+        {
+          "ename": "NameError",
+          "evalue": "name 'undefined_var' is not defined",
+          "output_type": "error",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+            "Cell \u001b[0;32mIn[3], line 1\u001b[0m\n\u001b[0;32m----> 1\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[43mundefined_var\u001b[49m)\n",
+            "\u001b[0;31mNameError\u001b[0m: name 'undefined_var' is not defined"
+          ]
+        }
+      ],
+      "source": "print(undefined_var)"
+    }
+  ],
+  "metadata": {},
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
