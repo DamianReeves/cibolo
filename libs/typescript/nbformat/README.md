@@ -356,6 +356,31 @@ Helper functions:
 - `generateCellId()` - Generate valid cell ID
 - `isValidCellId(id)` - Validate cell ID format
 
+## Pipeline Integration
+
+The nbformat library integrates seamlessly with the ndoctrinate Effect-based pipeline:
+
+```typescript
+import { Processor } from "ndoctrinate-core";
+import { NbformatParser, NbformatCompiler } from "ndoctrinate-nbformat";
+
+// Create a processor
+const processor = new Processor(
+  new NbformatParser(),
+  new NbformatCompiler()
+);
+
+// Process a notebook
+const result = await Effect.runPromise(processor.process(notebookJson));
+
+// Process with tree inspection
+const [output, tree] = await Effect.runPromise(
+  processor.processWithTree(notebookJson)
+);
+```
+
+See the [notebook-pipeline example](../../../apps/typescript/examples/notebook-pipeline) for complete working examples.
+
 ## Integration with unist Ecosystem
 
 nbast is fully compatible with the unist ecosystem, so you can use standard unist utilities:
