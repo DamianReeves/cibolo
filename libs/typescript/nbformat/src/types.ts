@@ -331,11 +331,7 @@ export type NbastRoot = NotebookRoot;
 /**
  * Type alias for any node in an nbast tree
  */
-export type NbastNode =
-  | NotebookRoot
-  | Cell
-  | Output
-  | TracebackLine;
+export type NbastNode = NotebookRoot | Cell | Output | TracebackLine;
 
 /**
  * Type alias for any parent node in an nbast tree

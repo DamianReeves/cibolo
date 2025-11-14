@@ -79,7 +79,9 @@ export class NbformatCompiler {
           throw new Error("Notebook root must have data with nbformat version");
         }
 
-        if (!isValidNbformatVersion(tree.data.nbformat, tree.data.nbformat_minor)) {
+        if (
+          !isValidNbformatVersion(tree.data.nbformat, tree.data.nbformat_minor)
+        ) {
           throw new Error(
             `Invalid nbformat version: ${tree.data.nbformat}.${tree.data.nbformat_minor}`
           );

@@ -106,7 +106,11 @@ describe("NbformatCompiler", () => {
       const parsed = JSON.parse(json);
 
       expect(Array.isArray(parsed.cells[0].source)).toBe(true);
-      expect(parsed.cells[0].source).toEqual(["Line 1\n", "Line 2\n", "Line 3"]);
+      expect(parsed.cells[0].source).toEqual([
+        "Line 1\n",
+        "Line 2\n",
+        "Line 3",
+      ]);
     });
 
     it("should support non-pretty printing", async () => {

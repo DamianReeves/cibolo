@@ -309,11 +309,7 @@ export function codeCellWithOutput(
     metadata?: CellMetadata;
   }
 ): CodeCell {
-  return codeCell(
-    source,
-    [streamOutput(outputText, "stdout")],
-    options
-  );
+  return codeCell(source, [streamOutput(outputText, "stdout")], options);
 }
 
 /**
@@ -357,9 +353,5 @@ export function codeCellWithError(
     metadata?: CellMetadata;
   }
 ): CodeCell {
-  return codeCell(
-    source,
-    [errorOutput(ename, evalue, traceback)],
-    options
-  );
+  return codeCell(source, [errorOutput(ename, evalue, traceback)], options);
 }

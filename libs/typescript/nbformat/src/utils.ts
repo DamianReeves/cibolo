@@ -93,9 +93,7 @@ export function isDisplayDataOutput(node: Node): node is DisplayDataOutput {
 /**
  * Check if a node is an ExecuteResultOutput
  */
-export function isExecuteResultOutput(
-  node: Node
-): node is ExecuteResultOutput {
+export function isExecuteResultOutput(node: Node): node is ExecuteResultOutput {
   return node.type === "executeResultOutput";
 }
 
@@ -208,7 +206,9 @@ export function getCellId(cell: Cell): string {
 /**
  * Get the cell metadata from any cell type
  */
-export function getCellMetadata(cell: Cell): Record<string, unknown> | undefined {
+export function getCellMetadata(
+  cell: Cell
+): Record<string, unknown> | undefined {
   return cell.data.metadata;
 }
 
@@ -243,7 +243,8 @@ export function isValidCellId(id: string): boolean {
  * Generate a valid random cell ID
  */
 export function generateCellId(): string {
-  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
+  const chars =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
   const length = 8; // Reasonable length for uniqueness
   let id = "";
   for (let i = 0; i < length; i++) {
@@ -255,9 +256,6 @@ export function generateCellId(): string {
 /**
  * Validate nbformat version (should be 4.x)
  */
-export function isValidNbformatVersion(
-  major: number,
-  minor: number
-): boolean {
+export function isValidNbformatVersion(major: number, minor: number): boolean {
   return major === 4 && minor >= 0;
 }

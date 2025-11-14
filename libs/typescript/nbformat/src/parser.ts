@@ -55,7 +55,9 @@ export class NbformatParser {
         }
 
         if (typeof notebook.nbformat !== "number") {
-          throw new Error("Invalid notebook: missing or invalid 'nbformat' version");
+          throw new Error(
+            "Invalid notebook: missing or invalid 'nbformat' version"
+          );
         }
 
         // Convert cells
