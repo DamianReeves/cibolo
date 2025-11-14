@@ -66,7 +66,7 @@ export class NbformatCompiler {
    */
   compile(
     tree: NotebookRoot,
-    file?: VFile
+    _file?: VFile
   ): Effect.Effect<string, CompileError, never> {
     return Effect.try({
       try: () => {

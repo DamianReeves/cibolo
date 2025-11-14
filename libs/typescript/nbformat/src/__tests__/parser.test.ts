@@ -7,7 +7,6 @@ import { Effect } from "effect";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { NbformatParser, parse } from "../parser.ts";
-import type { NotebookRoot, CodeCell, MarkdownCell } from "../types.ts";
 import {
   isCodeCell,
   isMarkdownCell,

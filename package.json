@@ -20,7 +20,7 @@
     "@nx/js": "^22.0.3",
     "@typescript-eslint/eslint-plugin": "^8.46.4",
     "@typescript-eslint/parser": "^8.46.4",
-    "eslint": "^9.20.1",
+    "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.8",
     "nx": "^22.0.3",
     "prettier": "^3.2.5"

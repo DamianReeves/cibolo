@@ -8,7 +8,6 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import { NbformatCompiler, compile } from "../compiler.ts";
 import { parse } from "../parser.ts";
-import type { NotebookRoot } from "../types.ts";
 import {
   notebook,
   codeCell,

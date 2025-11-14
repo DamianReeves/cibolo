@@ -41,7 +41,7 @@ export class NbformatParser {
    */
   parse(
     input: string | INotebookContent,
-    file?: VFile
+    _file?: VFile
   ): Effect.Effect<NotebookRoot, ParseError, never> {
     return Effect.try({
       try: () => {

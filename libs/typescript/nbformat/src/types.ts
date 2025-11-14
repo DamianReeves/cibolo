@@ -9,7 +9,7 @@
  * @see https://github.com/syntax-tree/unist
  */
 
-import type { Node, Parent, Literal, Data } from "unist";
+import type { Parent, Literal, Data } from "unist";
 
 /**
  * Re-export unist base types for convenience
