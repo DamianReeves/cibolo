@@ -249,112 +249,730 @@ interface ErrorOutput extends Parent {
 
 ## API Reference
 
-### Parser
+### Core Types
 
-#### `NbformatParser`
+All types are exported from the main module and follow the unist specification.
 
-Class for parsing nbformat JSON to nbast.
+```typescript
+import type {
+  // Root
+  NotebookRoot,
+  // Cells
+  Cell,
+  CodeCell,
+  MarkdownCell,
+  RawCell,
+  // Outputs
+  Output,
+  StreamOutput,
+  DisplayDataOutput,
+  ExecuteResultOutput,
+  ErrorOutput,
+  // Supporting types
+  MimeBundle,
+  NotebookMetadata,
+  CellMetadata,
+} from "ndoctrinate-nbformat";
+```
 
+---
+
+### Parser API
+
+#### `class NbformatParser`
+
+Parser class for converting nbformat JSON to nbast syntax tree.
+
+**Constructor:**
+```typescript
+new NbformatParser()
+```
+
+**Methods:**
+
+##### `parse(input, file?)`
+
+Parse nbformat JSON (string or object) into an nbast tree.
+
+**Parameters:**
+- `input: string | INotebookContent` - Notebook JSON string or parsed object
+- `file?: VFile` - Optional VFile for metadata and messages
+
+**Returns:** `Effect.Effect<NotebookRoot, ParseError, never>`
+
+**Example:**
 ```typescript
 import { NbformatParser } from "ndoctrinate-nbformat";
 import { Effect } from "effect";
 
 const parser = new NbformatParser();
-const tree = await Effect.runPromise(parser.parse(jsonString));
+
+// Parse from JSON string
+const tree = await Effect.runPromise(
+  parser.parse(notebookJsonString)
+);
+
+// Parse from object
+const notebookObj = JSON.parse(notebookJsonString);
+const tree2 = await Effect.runPromise(parser.parse(notebookObj));
+```
+
+**Error Handling:**
+```typescript
+const result = await Effect.runPromise(
+  parser.parse(input).pipe(
+    Effect.catchTag("ParseError", (error) => {
+      console.error("Parse failed:", error.message);
+      return Effect.succeed(fallbackTree);
+    })
+  )
+);
 ```
 
 #### `parse(input, file?)`
 
-Convenience function for parsing.
+Convenience function that creates a parser and parses in one step.
 
+**Parameters:**
+- `input: string | INotebookContent` - Notebook JSON to parse
+- `file?: VFile` - Optional VFile
+
+**Returns:** `Effect.Effect<NotebookRoot, ParseError, never>`
+
+**Example:**
 ```typescript
 import { parse } from "ndoctrinate-nbformat";
+import { Effect } from "effect";
 
-const tree = await Effect.runPromise(parse(jsonString));
+const tree = await Effect.runPromise(parse(notebookJson));
 ```
 
-### Compiler
+---
 
-#### `NbformatCompiler`
+### Compiler API
 
-Class for compiling nbast to nbformat JSON.
+#### `class NbformatCompiler`
 
+Compiler class for converting nbast back to nbformat JSON.
+
+**Constructor:**
+```typescript
+new NbformatCompiler(options?: NbformatCompilerOptions)
+```
+
+**Options:**
+```typescript
+interface NbformatCompilerOptions {
+  pretty?: boolean;         // Pretty-print JSON (default: true)
+  indent?: number;          // Indentation spaces (default: 2)
+  multilineSource?: boolean; // Use string[] for cell sources (default: false)
+}
+```
+
+**Methods:**
+
+##### `compile(tree, file?)`
+
+Compile an nbast tree to nbformat JSON string.
+
+**Parameters:**
+- `tree: NotebookRoot` - The nbast tree to compile
+- `file?: VFile` - Optional VFile for metadata
+
+**Returns:** `Effect.Effect<string, CompileError, never>`
+
+**Example:**
 ```typescript
 import { NbformatCompiler } from "ndoctrinate-nbformat";
 import { Effect } from "effect";
 
-const compiler = new NbformatCompiler({
-  pretty: true, // Pretty-print JSON (default: true)
-  indent: 2, // Indentation spaces (default: 2)
-  multilineSource: false, // Use string[] for sources (default: false)
-});
-
+// Basic usage
+const compiler = new NbformatCompiler();
 const json = await Effect.runPromise(compiler.compile(tree));
+
+// With options
+const compactCompiler = new NbformatCompiler({
+  pretty: false,
+  multilineSource: true,
+});
+const json2 = await Effect.runPromise(compactCompiler.compile(tree));
+
+// Custom indentation
+const fourSpaceCompiler = new NbformatCompiler({ indent: 4 });
+const json3 = await Effect.runPromise(fourSpaceCompiler.compile(tree));
 ```
 
 #### `compile(tree, options?, file?)`
 
 Convenience function for compiling.
 
+**Parameters:**
+- `tree: NotebookRoot` - Tree to compile
+- `options?: NbformatCompilerOptions` - Compiler options
+- `file?: VFile` - Optional VFile
+
+**Returns:** `Effect.Effect<string, CompileError, never>`
+
+**Example:**
 ```typescript
 import { compile } from "ndoctrinate-nbformat";
+import { Effect } from "effect";
 
 const json = await Effect.runPromise(
-  compile(tree, {
-    pretty: true,
-    indent: 2,
-  })
+  compile(tree, { pretty: true, indent: 2 })
 );
 ```
 
-### Builders
+---
 
-Functions for constructing nbast nodes:
+### Builder API
 
-- `notebook(cells, options?)` - Create notebook root
-- `codeCell(source, outputs?, options?)` - Create code cell
-- `markdownCell(source, options?)` - Create markdown cell
-- `rawCell(source, options?)` - Create raw cell
-- `streamOutput(text, stream?)` - Create stream output
-- `displayDataOutput(mimeBundle, options?)` - Create display data
-- `executeResultOutput(count, mimeBundle, options?)` - Create execute result
-- `errorOutput(ename, evalue, traceback)` - Create error output
+Functions for programmatically constructing nbast nodes with type safety.
 
-Convenience builders:
+#### Root Builder
 
-- `pythonNotebook(cells, options?)` - Create Python notebook with metadata
-- `simpleNotebook(cellDescriptions)` - Create notebook from simple descriptions
-- `codeCellWithOutput(source, outputText, options?)` - Code cell with stream output
-- `codeCellWithResult(source, result, options?)` - Code cell with execute result
-- `codeCellWithError(source, ename, evalue, traceback, options?)` - Code cell with error
+##### `notebook(cells, options?)`
 
-### Utilities
+Create a notebook root node.
 
-Type guards:
+**Parameters:**
+- `cells: Cell[]` - Array of cell nodes
+- `options?: { nbformat?: number; nbformat_minor?: number; metadata?: NotebookMetadata }`
 
-- `isNotebookRoot(node)` - Check if node is notebook root
-- `isCell(node)` - Check if node is any cell type
-- `isCodeCell(node)` - Check if node is code cell
-- `isMarkdownCell(node)` - Check if node is markdown cell
-- `isRawCell(node)` - Check if node is raw cell
-- `isOutput(node)` - Check if node is any output type
-- `isStreamOutput(node)` - Check if node is stream output
-- `isDisplayDataOutput(node)` - Check if node is display data output
-- `isExecuteResultOutput(node)` - Check if node is execute result output
-- `isErrorOutput(node)` - Check if node is error output
+**Returns:** `NotebookRoot`
 
-Helper functions:
+**Example:**
+```typescript
+import { notebook, markdownCell, codeCell } from "ndoctrinate-nbformat";
 
-- `getCellSource(cell)` - Get source from any cell type
-- `getCellId(cell)` - Get cell ID
-- `getCellMetadata(cell)` - Get cell metadata
-- `hasOutputs(cell)` - Check if cell has outputs
-- `getOutputs(cell)` - Get outputs from cell
-- `getPrimaryText(mimeBundle)` - Get text/plain from MIME bundle
-- `hasMimeType(mimeBundle, type)` - Check for MIME type
-- `getMimeTypes(mimeBundle)` - Get all MIME types
-- `generateCellId()` - Generate valid cell ID
-- `isValidCellId(id)` - Validate cell ID format
+const nb = notebook(
+  [
+    markdownCell("# My Notebook"),
+    codeCell("print('Hello')"),
+  ],
+  {
+    nbformat: 4,
+    nbformat_minor: 5,
+    metadata: {
+      kernelspec: {
+        name: "python3",
+        display_name: "Python 3",
+      },
+    },
+  }
+);
+```
+
+#### Cell Builders
+
+##### `codeCell(source, outputs?, options?)`
+
+Create a code cell node.
+
+**Parameters:**
+- `source: string` - Source code
+- `outputs?: Output[]` - Array of output nodes
+- `options?: { id?: string; executionCount?: number | null; metadata?: CellMetadata }`
+
+**Returns:** `CodeCell`
+
+**Example:**
+```typescript
+import { codeCell, streamOutput } from "ndoctrinate-nbformat";
+
+const cell = codeCell(
+  "import pandas as pd\ndf = pd.DataFrame()",
+  [streamOutput("DataFrame created\n")],
+  {
+    id: "cell-123",
+    executionCount: 1,
+    metadata: { tags: ["setup"] },
+  }
+);
+```
+
+##### `markdownCell(source, options?)`
+
+Create a markdown cell node.
+
+**Parameters:**
+- `source: string` - Markdown source text
+- `options?: { id?: string; metadata?: CellMetadata }`
+
+**Returns:** `MarkdownCell`
+
+**Example:**
+```typescript
+import { markdownCell } from "ndoctrinate-nbformat";
+
+const cell = markdownCell(
+  "## Data Analysis\n\nThis section analyzes the data.",
+  {
+    id: "intro",
+    metadata: { tags: ["documentation"] },
+  }
+);
+```
+
+##### `rawCell(source, options?)`
+
+Create a raw cell node.
+
+**Parameters:**
+- `source: string` - Raw source text
+- `options?: { id?: string; format?: string; metadata?: CellMetadata }`
+
+**Returns:** `RawCell`
+
+**Example:**
+```typescript
+import { rawCell } from "ndoctrinate-nbformat";
+
+const cell = rawCell(
+  ".. note::\n   This is reStructuredText",
+  {
+    id: "raw-1",
+    format: "text/restructuredtext",
+  }
+);
+```
+
+#### Output Builders
+
+##### `streamOutput(text, stream?)`
+
+Create a stream output node (stdout/stderr).
+
+**Parameters:**
+- `text: string` - Output text
+- `stream?: "stdout" | "stderr"` - Stream name (default: "stdout")
+
+**Returns:** `StreamOutput`
+
+**Example:**
+```typescript
+import { streamOutput } from "ndoctrinate-nbformat";
+
+const stdout = streamOutput("Execution complete\n");
+const stderr = streamOutput("Warning: deprecated\n", "stderr");
+```
+
+##### `displayDataOutput(mimeBundle, options?)`
+
+Create a display data output node.
+
+**Parameters:**
+- `mimeBundle: MimeBundle` - MIME-typed data representations
+- `options?: { metadata?: Record<string, unknown> }`
+
+**Returns:** `DisplayDataOutput`
+
+**Example:**
+```typescript
+import { displayDataOutput } from "ndoctrinate-nbformat";
+
+const output = displayDataOutput(
+  {
+    "text/plain": "<Figure size 640x480>",
+    "image/png": "iVBORw0KGgo...", // base64 encoded
+    "text/html": "<img src='...'>",
+  },
+  {
+    metadata: { isolated: true },
+  }
+);
+```
+
+##### `executeResultOutput(count, mimeBundle, options?)`
+
+Create an execute result output node.
+
+**Parameters:**
+- `executionCount: number` - Execution count when produced
+- `mimeBundle: MimeBundle` - Result data in multiple formats
+- `options?: { metadata?: Record<string, unknown> }`
+
+**Returns:** `ExecuteResultOutput`
+
+**Example:**
+```typescript
+import { executeResultOutput } from "ndoctrinate-nbformat";
+
+const result = executeResultOutput(
+  5,
+  {
+    "text/plain": "42",
+    "text/html": "<strong>42</strong>",
+  }
+);
+```
+
+##### `errorOutput(ename, evalue, traceback)`
+
+Create an error output node.
+
+**Parameters:**
+- `ename: string` - Exception name (e.g., "ValueError")
+- `evalue: string` - Exception message
+- `traceback: string[]` - Array of traceback lines
+
+**Returns:** `ErrorOutput`
+
+**Example:**
+```typescript
+import { errorOutput } from "ndoctrinate-nbformat";
+
+const error = errorOutput(
+  "NameError",
+  "name 'x' is not defined",
+  [
+    "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+    "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+    "Cell \u001b[0;32mIn[3], line 1\u001b[0m\n\u001b[0;32m----> 1\u001b[0m print(\u001b[43mx\u001b[49m)\n",
+    "\u001b[0;31mNameError\u001b[0m: name 'x' is not defined"
+  ]
+);
+```
+
+#### Convenience Builders
+
+##### `pythonNotebook(cells, options?)`
+
+Create a Python notebook with standard metadata.
+
+**Parameters:**
+- `cells: Cell[]` - Notebook cells
+- `options?: { pythonVersion?: string; kernelName?: string }`
+
+**Returns:** `NotebookRoot`
+
+**Example:**
+```typescript
+import { pythonNotebook, codeCell, markdownCell } from "ndoctrinate-nbformat";
+
+const nb = pythonNotebook(
+  [
+    markdownCell("# Python Analysis"),
+    codeCell("import numpy as np"),
+  ],
+  {
+    pythonVersion: "3.11.0",
+    kernelName: "python3",
+  }
+);
+```
+
+##### `simpleNotebook(cellDescriptions)`
+
+Create a notebook from simple cell descriptions.
+
+**Parameters:**
+- `cellDescriptions: Array<{type: "code"|"markdown"|"raw"; source: string; outputs?: Output[]}>`
+
+**Returns:** `NotebookRoot`
+
+**Example:**
+```typescript
+import { simpleNotebook, streamOutput } from "ndoctrinate-nbformat";
+
+const nb = simpleNotebook([
+  { type: "markdown", source: "# Hello" },
+  { type: "code", source: "print('world')", outputs: [streamOutput("world\n")] },
+  { type: "raw", source: "raw text" },
+]);
+```
+
+##### `codeCellWithOutput(source, outputText, options?)`
+
+Create a code cell with simple stdout output.
+
+**Parameters:**
+- `source: string` - Code source
+- `outputText: string` - Output text
+- `options?: { id?: string; executionCount?: number; metadata?: CellMetadata }`
+
+**Returns:** `CodeCell`
+
+**Example:**
+```typescript
+import { codeCellWithOutput } from "ndoctrinate-nbformat";
+
+const cell = codeCellWithOutput(
+  "print('Hello, World!')",
+  "Hello, World!\n",
+  { executionCount: 1 }
+);
+```
+
+##### `codeCellWithResult(source, result, options?)`
+
+Create a code cell with an execution result.
+
+**Parameters:**
+- `source: string` - Code source
+- `result: string` - Result value as string
+- `options?: { id?: string; executionCount?: number; metadata?: CellMetadata }`
+
+**Returns:** `CodeCell`
+
+**Example:**
+```typescript
+import { codeCellWithResult } from "ndoctrinate-nbformat";
+
+const cell = codeCellWithResult(
+  "2 + 2",
+  "4",
+  { executionCount: 1 }
+);
+```
+
+##### `codeCellWithError(source, ename, evalue, traceback, options?)`
+
+Create a code cell with an error output.
+
+**Parameters:**
+- `source: string` - Code source
+- `ename: string` - Exception name
+- `evalue: string` - Exception message
+- `traceback: string[]` - Traceback lines
+- `options?: { id?: string; executionCount?: number; metadata?: CellMetadata }`
+
+**Returns:** `CodeCell`
+
+**Example:**
+```typescript
+import { codeCellWithError } from "ndoctrinate-nbformat";
+
+const cell = codeCellWithError(
+  "undefined_var",
+  "NameError",
+  "name 'undefined_var' is not defined",
+  ["Traceback...", "NameError: ..."]
+);
+```
+
+---
+
+### Utility API
+
+#### Type Guards
+
+Functions for runtime type checking of nbast nodes.
+
+##### Node Type Guards
+
+```typescript
+// Root
+isNotebookRoot(node: Node): node is NotebookRoot
+
+// Cells
+isCell(node: Node): node is Cell
+isCodeCell(node: Node): node is CodeCell
+isMarkdownCell(node: Node): node is MarkdownCell
+isRawCell(node: Node): node is RawCell
+
+// Outputs
+isOutput(node: Node): node is Output
+isStreamOutput(node: Node): node is StreamOutput
+isDisplayDataOutput(node: Node): node is DisplayDataOutput
+isExecuteResultOutput(node: Node): node is ExecuteResultOutput
+isErrorOutput(node: Node): node is ErrorOutput
+isTracebackLine(node: Node): node is TracebackLine
+```
+
+**Example:**
+```typescript
+import { visit } from "unist-util-visit";
+import { isCodeCell, isMarkdownCell } from "ndoctrinate-nbformat";
+
+visit(tree, (node) => {
+  if (isCodeCell(node)) {
+    console.log("Code:", node.data.source);
+  } else if (isMarkdownCell(node)) {
+    console.log("Markdown:", node.value);
+  }
+});
+```
+
+#### Cell Utilities
+
+##### `getCellSource(cell: Cell): string`
+
+Get source code/text from any cell type.
+
+**Example:**
+```typescript
+import { getCellSource } from "ndoctrinate-nbformat";
+
+const source = getCellSource(cell); // Works for code, markdown, or raw cells
+```
+
+##### `getCellId(cell: Cell): string`
+
+Get the unique identifier from any cell.
+
+**Example:**
+```typescript
+import { getCellId } from "ndoctrinate-nbformat";
+
+const id = getCellId(cell); // Returns the cell ID
+```
+
+##### `getCellMetadata(cell: Cell): Record<string, unknown> | undefined`
+
+Get metadata from any cell type.
+
+**Example:**
+```typescript
+import { getCellMetadata } from "ndoctrinate-nbformat";
+
+const metadata = getCellMetadata(cell);
+if (metadata?.tags) {
+  console.log("Tags:", metadata.tags);
+}
+```
+
+##### `hasOutputs(cell: Cell): boolean`
+
+Check if a cell has any outputs (only true for code cells with outputs).
+
+**Example:**
+```typescript
+import { hasOutputs } from "ndoctrinate-nbformat";
+
+if (hasOutputs(cell)) {
+  console.log("Cell has outputs");
+}
+```
+
+##### `getOutputs(cell: Cell): Output[]`
+
+Get outputs from a cell (returns empty array for non-code cells).
+
+**Example:**
+```typescript
+import { getOutputs } from "ndoctrinate-nbformat";
+
+const outputs = getOutputs(cell);
+console.log(`Cell has ${outputs.length} outputs`);
+```
+
+#### MIME Bundle Utilities
+
+##### `getPrimaryText(mimeBundle: MimeBundle): string`
+
+Extract the primary text/plain representation from a MIME bundle.
+
+**Example:**
+```typescript
+import { getPrimaryText } from "ndoctrinate-nbformat";
+
+const text = getPrimaryText({
+  "text/plain": "Result: 42",
+  "text/html": "<b>Result: 42</b>",
+});
+// Returns: "Result: 42"
+```
+
+##### `hasMimeType(mimeBundle: MimeBundle, mimeType: string): boolean`
+
+Check if a MIME bundle contains a specific type.
+
+**Example:**
+```typescript
+import { hasMimeType } from "ndoctrinate-nbformat";
+
+if (hasMimeType(output.data.mimeBundle, "image/png")) {
+  console.log("Output includes PNG image");
+}
+```
+
+##### `getMimeTypes(mimeBundle: MimeBundle): string[]`
+
+Get all available MIME types in a bundle.
+
+**Example:**
+```typescript
+import { getMimeTypes } from "ndoctrinate-nbformat";
+
+const types = getMimeTypes(output.data.mimeBundle);
+console.log("Available formats:", types.join(", "));
+```
+
+##### `getMimeData(mimeBundle: MimeBundle, mimeType: string): unknown`
+
+Get data for a specific MIME type.
+
+**Example:**
+```typescript
+import { getMimeData } from "ndoctrinate-nbformat";
+
+const html = getMimeData(output.data.mimeBundle, "text/html");
+```
+
+#### Source Text Utilities
+
+##### `normalizeSource(source: string | string[]): string`
+
+Convert multiline source (string or array) to a single string.
+
+**Example:**
+```typescript
+import { normalizeSource } from "ndoctrinate-nbformat";
+
+const text = normalizeSource(["line1\n", "line2\n", "line3"]);
+// Returns: "line1\nline2\nline3"
+```
+
+##### `splitSource(source: string): string[]`
+
+Split source text into array format (preserving newlines).
+
+**Example:**
+```typescript
+import { splitSource } from "ndoctrinate-nbformat";
+
+const lines = splitSource("line1\nline2\nline3");
+// Returns: ["line1\n", "line2\n", "line3"]
+```
+
+#### Validation Utilities
+
+##### `isValidCellId(id: string): boolean`
+
+Validate cell ID format (1-64 alphanumeric characters, hyphens, underscores).
+
+**Example:**
+```typescript
+import { isValidCellId } from "ndoctrinate-nbformat";
+
+isValidCellId("cell-123"); // true
+isValidCellId("a".repeat(65)); // false (too long)
+isValidCellId("cell@invalid"); // false (invalid characters)
+```
+
+##### `generateCellId(): string`
+
+Generate a random valid cell ID.
+
+**Example:**
+```typescript
+import { generateCellId } from "ndoctrinate-nbformat";
+
+const id = generateCellId(); // Returns something like "aB3dEf9h"
+```
+
+##### `isValidNbformatVersion(major: number, minor: number): boolean`
+
+Validate nbformat version (must be 4.x).
+
+**Example:**
+```typescript
+import { isValidNbformatVersion } from "ndoctrinate-nbformat";
+
+isValidNbformatVersion(4, 5); // true
+isValidNbformatVersion(3, 0); // false
+```
 
 ## Pipeline Integration
 
